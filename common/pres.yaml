@@ -12,4 +12,7 @@ mainfont: DejaVu Sans
 monofont: DejaVu Sans Mono
 mathfont: XITS Math
 lang: ru-RU
+
+author: Ivan Trepakov
+institute: NSU Sys.Pro
 ---
