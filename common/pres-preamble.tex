@@ -44,14 +44,47 @@
   morecomment=[n][\color{CtpOverlay1}]{+++}{\^^M},
 }
 
+\lstdefinestyle{teal}{
+  style=default,
+  basicstyle={\color{CtpTeal}\ttfamily}
+}
+
+\lstdefinestyle{peach}{
+  style=default,
+  basicstyle={\color{CtpPeach}\ttfamily}
+}
+
+\lstdefinestyle{lavender}{
+  style=default,
+  basicstyle={\color{CtpLavender}\ttfamily}
+}
+
+\lstdefinestyle{mauve}{
+  style=default,
+  basicstyle={\color{CtpMauve}\ttfamily}
+}
+
+\lstdefinestyle{green}{
+  style=default,
+  basicstyle={\color{CtpGreen}\ttfamily}
+}
+
 \lstdefinestyle{error}{
   style=default,
   basicstyle={\color{CtpRed}\ttfamily}
 }
 
 \lstdefinestyle{highlight}{
+  style=peach,
+}
+
+\lstdefinestyle{type}{
+  style=mauve,
+}
+
+\lstdefinestyle{small}{
   style=default,
-  basicstyle={\color{CtpPeach}\ttfamily}
+  basicstyle={\ttfamily\small}
 }
 
 \lstset{style=default}
@@ -110,6 +143,10 @@
 
 %% TODO command
 \newcommand\todo[1]{\textcolor{red}{#1}}
+
+
+%% Emphasis with color
+\newcommand\cemph[1]{\textcolor{CtpMauve}{#1}}
 
 %%%%%%%%%%%%%%%%%%%
 %% Beamer stuff
