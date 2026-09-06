@@ -14,11 +14,11 @@ title: Compiler implementation
 \centering
 ```
 
-- Building *your own compiler* step by step
-  - Use *any language* you like
-  - Implement Lexer
-  - Implement Parser
-  - Implement LLVM IR generation
+- Building \cemph{your own compiler} step by step
+  - Use \cemph{any language} you like
+  - Implement \cemphp{Lexer}
+  - Implement \cemphp{Parser}
+  - Implement \cemphp{LLVM IR generation}
   - Use LLVM framework as backend
 - Incremental evolution of source language
   1. Basic untyped expression language
@@ -41,10 +41,39 @@ title: Compiler implementation
 :::: {.column width=42%}
 
 ```{=latex}
-\begin{minipage}[c][.5\textheight][c]{\linewidth}
-\centering
+\begin{minipage}[c][0.5\textheight][c]{\columnwidth}
 ```
-![](images/LLVMWyvernBig.png){width=80%}
+
+```{=latex}
+\centering
+\hspace{4em}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={4em},minimum height={2em},inner sep=1em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    tiny block/.style={block,scale=0.5},
+    large block/.style={block,minimum width=7em},
+    every matrix/.style={row sep=2em,column sep=-1.5em,ampersand replacement=\&,every node/.style={block}},
+  ]
+
+  \matrix {
+  \& \node [large block] (src) {Source}; \& \\
+  \& \node [large block] (tok) {Tokens}; \& \\
+  \& \node [large block] (ast) {AST}; \& \\
+  \& \node [large block] (ir)  {LLVM IR}; \& \\
+  \& \node [large block] (exe) {Executable}; \& \\
+  };
+  \graph [use existing nodes] {
+    src -> ["\hspace{4em} \cemphp{Lexer}"]   tok
+        -> ["\hspace{4em} \cemphp{Parser}"]  ast
+        -> ["\hspace{4em} \cemphp{Codegen}"] ir
+        -> ["\hspace{4em} LLVM backend"]     exe
+  };
+\end{tikzpicture}
+```
+
 ```{=latex}
 \end{minipage}
 ```
