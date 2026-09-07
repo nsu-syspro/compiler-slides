@@ -68,7 +68,7 @@ title: Compiler implementation
   \graph [use existing nodes] {
     src -> ["\hspace{4em} \cemphp{Lexer}"]   tok
         -> ["\hspace{4em} \cemphp{Parser}"]  ast
-        -> ["\hspace{4em} \cemphp{Codegen}"] ir
+        -> ["\hspace{4em} \cemphp{IR gen}"] ir
         -> ["\hspace{4em} LLVM backend"]     exe
   };
 \end{tikzpicture}
@@ -119,6 +119,139 @@ title: Compiler implementation
 
 ::::
 
+:::
+
+# Compiler architecture
+
+## Traditional compilation pipeline \centering
+
+::: columns
+:::: {.column width=58%}
+
+- Front end
+  - Lexing (Token stream)
+  - Parsing (Abstract Syntax Tree, AST)
+  - Type checking (Typed AST)
+  - Semantic checking
+  - Desugaring
+  - Translation to intermediate representation (IR)
+- Middle end
+  - Machine-independent optimizations and analyses
+- Back end
+  - Lowering to target arch IR
+  - Instruction selection
+  - Instruction scheduling
+  - Register allocation
+  - Machine code generation
+
+
+::::
+:::: {.column width=42%}
+
+```{=latex}
+\begin{minipage}[c][0.7\textheight][c]{\columnwidth}
+```
+
+```{=latex}
+\centering
+\hspace{4em}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={4em},minimum height={2em},inner sep=1em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    tiny block/.style={block,scale=0.5},
+    large block/.style={block,minimum width=7em},
+    every matrix/.style={row sep=2em,column sep=-1.5em,ampersand replacement=\&,every node/.style={block}},
+  ]
+
+  \matrix {
+  \& \node [large block] (front) {Front end}; \& \\
+  \& \node [large block] (middle) {Middle end}; \& \\
+  \& \node [large block] (back) {Back end}; \& \\
+  };
+  \graph [use existing nodes] {
+    front -> middle -> back
+  };
+  \draw[->] (middle.south) to[bend right=120,distance=7em] (middle.north);
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# Compiler architecture
+
+## Implementation \centering
+
+::: columns
+:::: {.column width=60%}
+
+- We will develop front end for LLVM
+  - \cemphp{Lexer}
+  - \cemphp{Parser}
+  - \cempht{Type checker} (later)
+  - \cemphp{LLVM IR generation}
+- LLVM framework handles middle and back end
+  - Optimization
+  - Code generation
+- All front end stages can be
+  - Part of single front end (recommended)
+  - Separate programs chained together
+- All intermediate formats can be dumped and checked
+  - Tokens (JSON)
+  - AST (JSON)
+  - LLVM IR (.ll or .bc)
+
+
+::::
+:::: {.column width=40%}
+
+```{=latex}
+\begin{minipage}[c][0.8\textheight][c]{\columnwidth}
+```
+
+```{=latex}
+\centering
+\hspace{4em}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={4em},minimum height={2em},inner sep=1em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    tiny block/.style={block,scale=0.5},
+    large block/.style={block,minimum width=7em},
+    every matrix/.style={row sep=2em,column sep=-1.5em,ampersand replacement=\&,every node/.style={block}},
+  ]
+
+  \matrix {
+  \& \node [large block] (src) {Source}; \& \\
+  \& \node [large block] (tok) {Tokens}; \& \\
+  \& \node [large block] (ast) {AST}; \& \\
+  \& \node [large block] (ir)  {LLVM IR}; \& \\
+  \& \node [large block] (exe) {Executable}; \& \\
+  };
+  \graph [use existing nodes] {
+    src -> ["\hspace{4em} \cemphp{Lexer}"]   tok
+        -> ["\hspace{4em} \cemphp{Parser}"]  ast
+        -> ["\hspace{4em} \cemphp{IR gen}"] ir
+        -> ["\hspace{4em} LLVM backend"]     exe
+  };
+  \draw[->] (ast.east) to[bend right=45,distance=2em] node[right] {\cempht{Type checker}} (ast.east);
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
 :::
 
 
