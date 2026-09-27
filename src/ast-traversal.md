@@ -1,81 +1,49 @@
 ---
-title: "ASTs & traversal design"
+title: "AST design"
 ---
 
-# The plan for today
+# AST design
 
 ##
 
 ::: columns
 :::: {.column width=55%}
 
-- One AST, three language families
-  - C/Zig --- tagged unions
-  - Java/Scala --- class hierarchies
-  - OCaml --- variants
-- How production compilers do it
-  - Clang, Roslyn, the OCaml compiler itself
-- Traversal design: \cemph{the expression problem}
-  - visitor vs switch vs match vs fold
+- How the same abstract syntax tree is represented in
+  - Imperative languages (C, Zig)
+  - Object-oriented languages (Java, Scala)
+  - Functional languages (OCaml)
+- Memory management, construction from a parser, traversal
+- How production compilers represent their ASTs
+  - CPython, GCC, rustc, Go, Clang, GHC, \dots
+- Semantic checks and IR generation as traversals
 
 ::::
-:::: {.column width=40%}
-
-```{=latex}
-\begin{minipage}[c][.5\textheight][c]{\linewidth}
-\centering
-```
-
-- Then: \cemphp{codegen is just another traversal}
-  - expressions $\to$ values
-  - statements $\to$ effects
-  - `alloca` / load / store
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::
-
-# One AST, three shapes
-
-##
-
-::: columns
-:::: {.column width=48%}
-
-The same little language:
-
-$$e \;=\; n \;\mid\; x \;\mid\; e_1 + e_2 \;\mid\; e_1 \cdot e_2$$
-
-The tree for `a + b * c` is the same in every language.
-
-What differs is \cemph{how the type system expresses it}:
-
-- three idioms for sum types ---
-  three sets of trade-offs
-
-::::
-:::: {.column width=48%}
+:::: {.column width=42%}
 
 ```{=latex}
 \begin{minipage}[c][.4\textheight][c]{\linewidth}
 \centering
+```
+
+```{=latex}
+\hspace{2em}
 \begin{tikzpicture}[
     ->,>=latex,
-    every node/.style={font=\footnotesize},
-    n/.style={draw,rounded corners,minimum width=3.2em,minimum height=1.6em},
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={4em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    every matrix/.style={row sep=2em,column sep=1.5em,ampersand replacement=\&,every node/.style={block}},
   ]
-  \node[n] (add) {$+$};
-  \node[n,below left=1.2em and 0.8em of add] (a) {$a$};
-  \node[n,below right=1.2em and 0.8em of add] (mul) {$\cdot$};
-  \node[n,below left=1.2em and 0.2em of mul] (b) {$b$};
-  \node[n,below right=1.2em and 0.2em of mul] (c) {$c$};
-  \draw (add) -- (a);
-  \draw (add) -- (mul);
-  \draw (mul) -- (b);
-  \draw (mul) -- (c);
+
+  \matrix {
+  \& \node [block] (add) {$+$}; \& \\
+  \node [block] (a) {$a$}; \& \node [block] (b) {$b$}; \\
+  };
+  \graph [use existing nodes] {
+    add -> a; add -> b;
+  };
 \end{tikzpicture}
 ```
 
@@ -86,7 +54,128 @@ What differs is \cemph{how the type system expresses it}:
 ::::
 :::
 
-# C/Zig: tagged union + switch
+# Abstract syntax trees
+
+## Grammar and tree \centering
+
+::: columns
+:::: {.column width=50%}
+
+$$
+e \; ::= \; n \; | \; x \; | \; e_1 + e_2 \; | \; e_1 \cdot e_2
+$$
+
+- A parse tree records every derivation step
+- An \cemph{abstract} syntax tree keeps only the structure
+  - Parentheses, precedence, spelling of keywords: gone
+- The tree shape mirrors the grammar productions
+- Every later stage of the compiler works on this tree
+  - Semantic checks, transformations, IR generation
+
+::::
+:::: {.column width=48%}
+
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{1em}
+
+$(a + b) \cdot c$
+
+\vspace{0.5em}
+
+```{=latex}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={4em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    every matrix/.style={row sep=2em,column sep=1.5em,ampersand replacement=\&,every node/.style={block}},
+  ]
+
+  \matrix {
+  \& \& \node [block] (mul) {$\cdot$}; \& \\
+  \& \node [block] (add) {$+$}; \& \& \node [block] (c) {$c$}; \\
+  \node [block] (a) {$a$}; \& \node [block] (b) {$b$}; \\
+  };
+  \graph [use existing nodes] {
+    mul -> add; mul -> c; add -> a; add -> b;
+  };
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# One AST, three families
+
+##
+
+::: columns
+:::: {.column width=31%}
+
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{2em}
+
+\cemph{Imperative}
+
+C, Zig
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::: {.column width=31%}
+
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{2em}
+
+\cemph{Object-oriented}
+
+Java, Scala
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::: {.column width=31%}
+
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{2em}
+
+\cemph{Functional}
+
+OCaml
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# One AST, three families
 
 ##
 
@@ -95,87 +184,52 @@ What differs is \cemph{how the type system expresses it}:
 ```
 
 ::: columns
-:::: {.column width=58%}
+:::: {.column width=31%}
 
 ```c
-enum expr_kind { EXPR_INT, EXPR_VAR,
-                 EXPR_ADD, EXPR_MUL };
+enum expr_kind {
+    EXPR_INT,
+    EXPR_VAR,
+    EXPR_ADD,
+    EXPR_MUL,
+};
 
 struct expr {
     enum expr_kind kind;
-    union {
-        int64_t  int_val;
-        char    *var_name;
-        struct { struct expr *l, *r; };
-    };
+    int64_t int_val;
+    const char *var_name;
+    struct expr *l, *r;
 };
-
-struct expr *add(struct expr *l,
-                 struct expr *r);
 ```
 
-::::
-:::: {.column width=40%}
-
-- data is \cemph{one struct with a tag}
-- Zig: `union(enum) { int: i64, ... }`
-  - tag + payload handled by the language
-- memory: manual (`malloc`/`free` or arena)
-- **who has this shape at home?**
-
-\vspace{1em}
-Zig `switch` is exhaustive ---
-the compiler keeps the checklist for you
+\vspace{0.3em}
+\centering
+\cemph{tagged union}
 
 ::::
-:::
-
-# Java/Scala: class hierarchy
-
-##
-
-::: columns
-:::: {.column width=55%}
+:::: {.column width=31%}
 
 ```java
-sealed interface Expr permits
-    IntLit, Var, Add, Mul {}
+sealed interface Expr
+  permits IntLit, Var,
+          Add, Mul { }
 
 record IntLit(long value)
-        implements Expr {}
+  implements Expr { }
 record Var(String name)
-        implements Expr {}
-record Add(Expr left, Expr right)
-        implements Expr {}
-record Mul(Expr left, Expr right)
-        implements Expr {}
+  implements Expr { }
+record Add(Expr l, Expr r)
+  implements Expr { }
+record Mul(Expr l, Expr r)
+  implements Expr { }
 ```
 
-::::
-:::: {.column width=40%}
-
-- the type hierarchy \cemph{is} the schema
-- Scala:
-
-```scala
-sealed trait Expr
-case class Add(l: Expr, r: Expr)
-      extends Expr
-```
-
-- modern Java: records + pattern
-  matching in `switch`
-- **who has this shape at home?**
+\vspace{0.3em}
+\centering
+\cemphp{class hierarchy}
 
 ::::
-:::
-
-# OCaml: variant + pattern match
-
-##
-
-::: columns
-:::: {.column width=55%}
+:::: {.column width=31%}
 
 ```ocaml
 type expr =
@@ -183,206 +237,384 @@ type expr =
   | Var of string
   | Add of expr * expr
   | Mul of expr * expr
-
-let e = Add (Var "a",
-          Mul (Var "b", Var "c"))
 ```
 
-::::
-:::: {.column width=40%}
+\vspace{2em}
 
-- the whole AST: \cemphp{one line}
-- `match` is exhaustive \cemph{by default}
-- memory: GC --- don't think about it
-- this is the "flat enum" style
-  rustc uses internally
+\centering
+$\Longrightarrow$
 
-\vspace{1em}
-**Who has this shape at home?**
+\cemph{ADT}
+
+algebraic data type
 
 ::::
 :::
 
-# Same tree, three shapes
+# Memory management
 
-##
+## Who owns the nodes? \centering
 
 ::: columns
-:::: {.column width=100%}
+:::: {.column width=31%}
 
-\begin{center}
-\begin{tabular}{lll}
-\hline
- & representation & memory \\
-\hline
-C     & tagged struct + union & manual / arena \\
-Zig   & tagged union          & arenas idiomatic \\
-Java/Scala & class hierarchy  & GC \\
-OCaml & variant               & GC \\
-\hline
-\end{tabular}
-\end{center}
+\cemph{Manual / arena}
 
-\vspace{1em}
-\cemph{union-of-variants (data-first)} vs \cemphp{class-hierarchy (type-first)}
+- Nodes are heap-allocated and never freed individually
+- Arena (bump) allocator: allocate nodes one after another,
+  free the whole arena when the AST dies
+- In Zig the allocator is an explicit argument of every
+  allocation
+- In C: `malloc`, or wrap an arena in a few macros
 
-\vspace{0.5em}
-Your language pushed you into a corner --- now you own that corner's trade-offs.
+- Parents own children; the tree is a DAG-free ownership tree
+
+::::
+:::: {.column width=31%}
+
+\cemphp{Garbage collection}
+
+- JVM / .NET / Go: `new` and forget
+- Nodes reference each other freely
+- No ownership question, at the cost of
+  GC pauses and memory overhead
+
+- Immutable records fit GC particularly well:
+  no write barriers on old objects
+
+::::
+:::: {.column width=31%}
+
+\cemphp{Garbage collection}
+
+- OCaml: minor heap allocation is a pointer bump;
+  short-lived ASTs mostly die young
+- Values are immutable by default
+- Sharing instead of copying is safe: subtrees
+  can be reused across trees
 
 ::::
 :::
 
-# Production compilers
+# Building the AST from a recursive descent parser
 
 ##
 
-::: columns
-:::: {.column width=55%}
-
-\cemphp{Clang} (C++)
-
-- deep class hierarchy: `Stmt` $\to$ `Expr` $\to$ $\dots$
-- inheritance = the poor man's sum type
-- every node carries a `Kind` tag (\cemph{classof})
-- uniform `children()` iteration
-- cost: macro-generated boilerplate
-
-\vspace{0.8em}
-\cemphp{OCaml compiler} (guess)
-
-- its own `parsetree` is a giant
-  OCaml variant --- dogfooding
-
-::::
-:::: {.column width=42%}
-
-\cemphp{Roslyn} (C\#) --- red-green trees
-
-- \cemph{green}: compact, immutable, no positions --- sharing everywhere
-- \cemph{red}: positions + parent links, mostly cached views
-- why: IDE undo, cheap snapshots
-- our ast.json goldens (with line/column)
-  = "red tree" data
-
-::::
-:::
-
-# Exercise: grammar 2 lands
-
-##
-
-::: columns
-:::: {.column width=50%}
-
-```
-if (c) { s1 } else { s2 }
-while (c) { s }
+```{=latex}
+\lstset{style=small}
 ```
 
-For each of the three shapes:
-
-- what gets added?
-- what gets \cemph{generalized}?
-- does your schema survive \cemphp{additively}?
-
-::::
-:::: {.column width=45%}
-
-- new variants: `If`, `While`
-- new \cemph{split}: statements vs
-  expressions (grammar 1 was
-  almost all expressions)
-- `break`: leaf statement ---
-  but wait until codegen $\dots$
-
-\vspace{1em}
-additive change vs
-\cemphp{schema-breaking change} ---
-which one did your design admit?
-
-::::
-:::
-
-# The expression problem
-
-##
-
 ::: columns
-:::: {.column width=100%}
+:::: {.column width=31%}
 
-\begin{center}
-\begin{tabular}{lcc}
-\hline
- & add \cemph{operation} & add \cemph{node kind} \\
-\hline
-visitor (Java/Scala)  & easy & painful \\
-switch on tag (C)     & painful$^{*}$ & easy \\
-tagged union switch (Zig) & painful$^{*}$ & easy \cemphp{+ checklist} \\
-ADT + match (OCaml)   & painful$^{*}$ & easy \cemphp{+ checklist} \\
-fold / catamorphism   & easy & painful-ish \\
-\hline
-\end{tabular}
-\end{center}
+\cemph{C / Zig}
 
-\vspace{0.6em}
-{\footnotesize $^{*}$unless your language checks exhaustiveness --- then it's the compiler's to-do list}
+- Parse functions return nodes or
+  pointers to nodes
 
-\vspace{0.8em}
-This semester: node kinds keep coming (g2--g5).
+```c
+struct expr *e =
+  make_add(parse_add(),
+           parse_mul());
+```
 
-Next semester: \cemphp{operations} keep coming (passes).
-
-Which axis did your choice make painful?
+- The node constructor is a plain
+  function; the allocation strategy
+  (malloc vs arena) is invisible
+  to the parser
 
 ::::
-:::
+:::: {.column width=31%}
 
-# Visitor: double dispatch
+\cemphp{Java / Scala}
 
-##
-
-::: columns
-:::: {.column width=55%}
+- Parse methods return `Expr`
 
 ```java
-interface ExprVisitor<R> {
-    R visitInt(IntLit e);
-    R visitVar(Var e);
-    R visitAdd(Add e);
-    R visitMul(Mul e);
+Expr parseAdd() {
+    var l = parseMul();
+    while (next is "+") {
+        var r = parseMul();
+        l = new Add(l, r);
+    }
+    return l;
+}
+```
+
+- Factory methods and builders when
+  node construction needs more than
+  field assignment
+
+::::
+:::: {.column width=31%}
+
+\cemph{OCaml}
+
+- Parse functions return values
+
+```ocaml
+(* left fold over the
+   multiplicative level *)
+let rec parse_mul () =
+  match op with
+  | Add -> Add (l, r)
+```
+
+- Constructed bottom-up; values,
+  not builders
+
+- Parser combinators are the
+  functional idiom --- details in
+  the Haskell course next semester
+
+::::
+:::
+
+# Traversal
+
+##
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=31%}
+
+\cemph{Switch on the tag}
+
+```c
+int64_t eval
+  (const struct expr *e) {
+  switch (e->kind) {
+  case EXPR_INT:
+    return e->int_val;
+  case EXPR_VAR:
+    return lookup(name);
+  case EXPR_ADD:
+    return eval(e->l)
+         + eval(e->r);
+  case EXPR_MUL:
+    return eval(e->l)
+         * eval(e->r);
+  }
+}
+```
+
+- No exhaustiveness check
+
+::::
+:::: {.column width=31%}
+
+\cemphp{Visitor / double dispatch}
+
+```java
+interface Visitor<R> {
+  R visitInt(IntLit e);
+  R visitVar(Var e);
+  R visitAdd(Add e);
+  R visitMul(Mul e);
 }
 
 record Add(Expr l, Expr r)
-        implements Expr {
-    R accept(ExprVisitor<R> v) {
-        return v.visitAdd(this);
-    }
+    implements Expr {
+  R accept(Visitor<R> v) {
+    return v.visitAdd(this);
+  }
 }
 ```
 
+- One method per node class
+
 ::::
-:::: {.column width=40%}
+:::: {.column width=31%}
 
-- each node \cemph{knows} its type ---
-  and calls back
-- adding an \cemph{operation} =
-  new visitor, existing AST
-- adding a \cemph{node kind} =
-  touch the interface +
-  \cemphp{every visitor}
-- the classic pattern in
-  Java-land compilers
+\cemph{Pattern matching}
 
-\vspace{0.8em}
-Where it's fine: stable node set,
-many operations
+```ocaml
+let rec eval env =
+  function
+  | Int n  -> n
+  | Var x  -> find x env
+  | Add (l, r) ->
+    eval env l
+    + eval env r
+  | Mul (l, r) ->
+    eval env l
+    * eval env r
+```
+
+- Exhaustiveness checked by the
+  compiler: forgetting a variant
+  is a warning or an error
 
 ::::
 :::
 
-# Switch on tag: C vs Zig
+# Traversal
 
-##
+## Kinds of traversal \centering
+
+::: columns
+:::: {.column width=55%}
+
+- \cemph{Compute a value} --- evaluation, constant folding
+- \cemph{Transform} --- desugaring, lowering to a smaller core
+- \cemph{Emit} --- IR generation: expression $\to$ value,
+  statement $\to$ effect
+- \cemph{Inspect} --- name resolution, semantic checks
+
+\vspace{1.5em}
+
+Each kind works with any of the three data structures;
+the data structure decides \cemph{how} the traversal is written,
+not \cemph{whether} it can be written
+
+- \cemph{add operation}: easy everywhere
+- \cemph{add node kind}: touches either every operation
+  (switch, match) or every node class (visitor)
+
+::::
+:::: {.column width=40%}
+
+representation $\times$ traversal
+
+\vspace{0.8em}
+
+\begin{tabular}{p{5.2em}ll}
+\hline
+ & \cemph{add op} & \cemphp{add kind} \\
+\hline
+tagged union & easy & all switches \\
+class hier.  & easy & all classes \\
+ADT          & easy & all matches \\
+\hline
+\end{tabular}
+
+\vspace{1.5em}
+
+All three choices pay the same price somewhere ---
+the differences are in \cemph{where} the compiler
+concentrates the cost
+
+::::
+:::
+
+# What real compilers do
+
+## Representation by language family \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=31%}
+
+\cemph{Tagged unions}
+
+- CPython --- `A_Expr`, op enums
+- GCC --- `tree_code` over `union tree_node`
+- rustc --- `enum ExprKind`
+- Go --- `ir.Op` over a node struct
+- LLVM SelectionDAG --- `ISD::NodeType`
+- Zig --- `std.zig.Ast`, tag per node
+
+::::
+:::: {.column width=31%}
+
+\cemph{ADTs}
+
+- GHC --- `HsExpr` per pass
+- OCaml compiler --- `Parsetree`
+- Scala 3 --- `Tree` ADT
+- F\# --- `SynExpr`
+- Elm --- `Expr`
+
+::::
+:::: {.column width=31%}
+
+\cemphp{Class hierarchies}
+
+- Clang --- `Stmt`/`Expr` hierarchy
+- Swift --- `Syntax` protocol tree
+- Roslyn --- green/red trees
+- javac --- `JCTree` subclasses
+- V8 --- `AstNode` subclasses
+
+::::
+:::
+
+# What real compilers do
+
+## Deep dives \centering
+
+::: columns
+:::: {.column width=31%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{3em}
+
+\cemph{Clang}
+
+class hierarchy + arena
+
+\vspace{1em}
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::: {.column width=31%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{3em}
+
+\cemph{rustc}
+
+enum + arena
+
+\vspace{1em}
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::: {.column width=31%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{3em}
+
+\cemph{GHC}
+
+ADT parameterized by pass
+
+\vspace{1em}
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# Clang
+
+## class hierarchy + arena \centering
 
 ```{=latex}
 \lstset{style=small}
@@ -391,224 +623,445 @@ many operations
 ::: columns
 :::: {.column width=48%}
 
-```c
-/* C: silent if you forget a case */
-int64_t eval(const struct expr *e,
-             const struct env *env) {
-    switch (e->kind) {
-    case EXPR_INT:
-        return e->int_val;
-    case EXPR_VAR:
-        return lookup(env, e->var_name);
-    case EXPR_ADD:
-        return eval(e->l, env)
-             + eval(e->r, env);
-    case EXPR_MUL:
-        return eval(e->l, env)
-             * eval(e->r, env);
-    }
-    return -1; /* ...and this */
-}
-```
+- `Stmt`/`Expr` --- about a hundred node classes,
+  one per syntactic form
+- Every node carries a kind tag: cheap `isa`/`dyn_cast`
+  without RTTI, needed for visitor-style dispatch
+- Uniform child storage: `BinaryOperator` keeps
+  `Stmt *SubExprs[2]` --- children typed `Stmt*`,
+  not dedicated fields
+- All nodes allocated in the `ASTContext` arena;
+  freed once, when the translation unit is done
+- Traversal: `StmtVisitor` --- visitor over
+  the class hierarchy
 
 ::::
-:::: {.column width=49%}
+:::: {.column width=48%}
 
-```zig
-// Zig: the compiler IS the checklist
-fn eval(e: Expr, env: *Env) !i64 {
-    return switch (e) {
-        .int  => |v| v,
-        .var  => |n| env.get(n),
-        .add  => |p| try eval(p.l, env)
-                   + try eval(p.r, env),
-        .mul  => |p| try eval(p.l, env)
-                   * try eval(p.r, env),
-    };
-}
+```{=latex}
+\centering
+```
+
+```cpp
+class BinaryOperator : public Expr {
+  enum { LHS, RHS, END_EXPR };
+  Stmt *SubExprs[END_EXPR];
+
+public:
+  typedef BinaryOperatorKind Opcode;
+
+  const Expr *getLHS() const {
+    return cast<Expr>(SubExprs[LHS]);
+  }
+};
 ```
 
 \vspace{0.8em}
-add `.div` to the union $\Rightarrow$
-\cemphp{compile error} here ---
-a to-do list you can't ignore
+
+\qrcode[height=2.2cm]{https://github.com/llvm/llvm-project/blob/main/clang/include/clang/AST/Expr.h}
+
+[clang/AST/Expr.h]{.small}
 
 ::::
 :::
 
-# OCaml: match, and the 10-line evaluator
+# rustc
 
-##
-
-::: columns
-:::: {.column width=55%}
-
-```ocaml
-let rec eval env = function
-  | Int n -> n
-  | Var x -> Env.find x env
-  | Add (l, r) ->
-      Int64.add (eval env l) (eval env r)
-  | Mul (l, r) ->
-      Int64.mul (eval env l) (eval env r)
-```
-
-\vspace{0.6em}
-{\footnotesize exhaustiveness checked ---
-forgot a case? compile error}
-
-::::
-:::: {.column width=40%}
-
-- recursion + match: the whole
-  interpreter
-- generalization: \cemph{fold}
-  (catamorphism) --- define the
-  recursion scheme once over the
-  shape; operations become algebras
-- ambitious corner: look up
-  "fixpoints of functors" if curious
-
-\vspace{0.8em}
-Generic walker + callbacks
-(`RecursiveASTVisitor` in clang):
-same idea for OO languages ---
-one walker, all operations
-
-::::
-:::
-
-# Honest closing of part 1
-
-##
-
-- for five grammars, \cemph{any consistent choice works}
-- the skill is \cemphp{knowing the trade-off}, not picking the winner
-- next semester you'd add operations (passes) ---
-  today's choice decides how much that hurts
-- discussion: which corner are you in, and what hurts first?
-
-# Codegen is just another traversal
-
-##
-
-::: columns
-:::: {.column width=55%}
-
-`var x = a + b * c; return x;`
-
-```llvm
-%x.slot = alloca i64
-%a = load i64, ptr %a.slot
-%b = load i64, ptr %b.slot
-%c = load i64, ptr %c.slot
-%t1 = mul i64 %b, %c
-%t2 = add i64 %a, %t1
-store i64 %t2, ptr %x.slot
-ret i64 %t2
-```
-
-\vspace{0.4em}
-{\footnotesize same tree, same IR --- traversal does the work}
-
-::::
-:::: {.column width=42%}
-
-- expressions: \cemphp{produce values}
-  (`Add` returns an LLVM `Value*`)
-- statements: \cemph{produce effects}
-  (`var x = ...` emits a store,
-  returns nothing)
-- this split is \cemph{why} decl/expr
-  separation exists in your AST
-- variables = `alloca` + load/store;
-  scope = which alloca is visible ---
-  a traversal with an environment
-
-::::
-:::
-
-# Codegen, in two of today's styles
-
-##
+## enum + arena \centering
 
 ```{=latex}
 \lstset{style=small}
 ```
 
 ::: columns
-:::: {.column width=58%}
+:::: {.column width=48%}
+
+- `enum ExprKind` --- about a hundred variants,
+  one per syntactic form
+- Children are `Box<Expr>` and `ThinVec<Box<Expr>>` ---
+  boxed, since enum variants must have one size
+- Allocated in per-phase arenas: the AST is built,
+  used, and dropped together
+- AST is only the first tree: lowered to HIR,
+  then to MIR --- each tree much smaller than
+  the last
+- Traversal: `match` on the variant, often via
+  `#[derive]`-generated visitors
+
+::::
+:::: {.column width=48%}
+
+```{=latex}
+\centering
+```
+
+```rust
+pub enum ExprKind {
+  /// A literal (e.g., `1`).
+  Lit(token::Lit),
+  /// A binary operation
+  /// (e.g., `a + b`).
+  Binary(BinOp, Box<Expr>,
+         Box<Expr>),
+  /// An `if` block, with an
+  /// optional `else` block.
+  If(Box<Expr>, Box<Block>,
+     Option<Box<Expr>>),
+  // ... about 100 variants
+}
+```
+
+\vspace{0.8em}
+
+\qrcode[height=2.2cm]{https://github.com/rust-lang/rust/blob/master/compiler/rustc_ast/src/ast.rs}
+
+[compiler/rustc\_ast/src/ast.rs]{.small}
+
+::::
+:::
+
+# GHC
+
+## ADT parameterized by pass \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=48%}
+
+- One ADT per syntactic category: `HsExpr`,
+  `HsPat`, `HsType`, \dots
+- The ADT is parameterized by the \cemph{compiler
+  pass}: `GhcPs` (parsed), `GhcRn` (renamed),
+  `GhcTc` (typechecked)
+- Type families attach per-phase payloads:
+  after renaming a binary application records
+  its \cemph{fixity}; after typechecking the same
+  variant cannot appear at all
+- The type system makes illegal tree states
+  unrepresentable: a typechecked `OpApp` does
+  not typecheck
+- Traversal: plain `match`, one walk per pass
+
+::::
+:::: {.column width=48%}
+
+```{=latex}
+\centering
+```
+
+```haskell
+-- OpApp not present in GhcTc pass
+type instance XOpApp GhcPs =
+  NoExtField
+type instance XOpApp GhcRn = Fixity
+type instance XOpApp GhcTc =
+  DataConCantHappen
+```
+
+\vspace{0.8em}
+
+Same constructor, different payloads per
+pass --- and one variant is \cemph{gone} after
+typechecking
+
+\vspace{0.8em}
+
+\qrcode[height=2.2cm]{https://github.com/ghc/ghc/blob/master/compiler/GHC/Hs/Expr.hs}
+
+[compiler/GHC/Hs/Expr.hs]{.small}
+
+::::
+:::
+
+# References
+
+## Sources \centering
+
+::: columns
+:::: {.column width=31%}
+
+\vspace{1em}
+
+\qrcode[height=2.8cm]{https://github.com/llvm/llvm-project/blob/main/clang/include/clang/AST/Expr.h}
+
+\vspace{0.3em}
+
+[clang/AST/Expr.h]{.small}
+
+::::
+:::: {.column width=31%}
+
+\vspace{1em}
+
+\qrcode[height=2.8cm]{https://github.com/rust-lang/rust/blob/master/compiler/rustc_ast/src/ast.rs}
+
+\vspace{0.3em}
+
+[compiler/rustc\_ast/src/ast.rs]{.small}
+
+::::
+:::: {.column width=31%}
+
+\vspace{1em}
+
+\qrcode[height=2.8cm]{https://github.com/ghc/ghc/blob/master/compiler/GHC/Hs/Expr.hs}
+
+\vspace{0.3em}
+
+[compiler/GHC/Hs/Expr.hs]{.small}
+
+::::
+:::
+
+# Semantic checks and codegen are traversals
+
+## Every stage is a walk over the same tree \centering
+
+::: columns
+:::: {.column width=45%}
+
+- \cemph{Name resolution} --- find declarations,
+  reject undefined variables
+- \cemph{Type checking} --- compute and compare types
+  (a later grammar stage)
+- \cemph{Constant evaluation} --- fold `2 + 3 * 4`
+- \cemph{IR generation} --- lower the tree to LLVM IR
+
+\vspace{1.5em}
+
+Each of these is a traversal; the three families
+only differ in how the walk is written:
+
+- switch on tag
+- visitor / double dispatch
+- pattern match
+
+::::
+:::: {.column width=45%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\hspace{1em}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={4em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    every matrix/.style={row sep=1.8em,column sep=1.2em,ampersand replacement=\&,every node/.style={block}},
+  ]
+
+  \matrix {
+  \& \node [block] (add) {$+$}; \& \\
+  \node [block] (a) {$a$}; \& \node [block] (b) {$b$}; \\
+  };
+  \graph [use existing nodes] {
+    add -> a; add -> b;
+  };
+\end{tikzpicture}
+```
+
+\vspace{0.8em}
+
+resolve $a$, $b$ --- a traversal
+
+fold $2+3$ --- a traversal
+
+emit code --- a traversal
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# IR generation for expressions
+
+## Same traversal, three styles \centering
+
+::: columns
+:::: {.column width=31%}
+
+\cemph{Switch}
 
 ```c
-/* C: one emit function */
-LLVMValueRef emit(const struct expr *e,
-                  struct ctx *ctx) {
+/* x = a + b */
+LLVMValueRef emit(const
+    struct expr *e) {
     switch (e->kind) {
     case EXPR_INT:
-        return LLVMConstInt(i64, e->int_val, 0);
+        return LLVMConstInt(
+          i64, e->int_val, 0);
+    case EXPR_VAR:
+        return load_var(
+          e->var_name);
     case EXPR_ADD:
         return LLVMBuildAdd(b,
-                 emit(e->l, ctx),
-                 emit(e->r, ctx), "t");
-    /* ... */
+          emit(e->l),
+          emit(e->r), "");
+    ...
     }
 }
 ```
 
 ::::
-:::: {.column width=39%}
+:::: {.column width=31%}
 
-```ocaml
-(* OCaml: the same traversal *)
-let rec emit env = function
-  | Int n -> const i64 n
-  | Var x -> load (find x env)
-  | Add (l, r) -> build_add
-      (emit env l) (emit env r)
-  | Mul (l, r) -> build_mul
-      (emit env l) (emit env r)
+\cemphp{Visitor}
+
+```java
+class EmitVisitor
+    implements Visitor<Value> {
+
+  Value visitInt(IntLit e) {
+    return i64(e.value);
+  }
+
+  Value visitVar(Var e) {
+    return load(e.name);
+  }
+
+  Value visitAdd(Add e) {
+    return builder.add(
+      e.l.accept(this),
+      e.r.accept(this));
+  }
+  ...
+}
 ```
 
-\vspace{0.8em}
-different glue, \cemph{identical IR}
+::::
+:::: {.column width=31%}
 
-\vspace{0.8em}
-\cemphp{No phi functions needed:}
-alloca + load/store is fine ---
-`opt`'s mem2reg turns it into SSA
-(that's next semester's theory)
+\cemph{Match}
+
+```ocaml
+let rec emit = function
+  | Int n -> const i64 n
+  | Var x -> load x
+  | Add (l, r) ->
+      build add (emit l)
+                (emit r)
+  | Mul (l, r) ->
+      build mul (emit l)
+                (emit r)
+```
+
+\vspace{1em}
+
+expressions $\to$ values
+
+statements $\to$ effects
 
 ::::
 :::
 
-# What grammar 2 will do to this
+# What it emits
 
-##
+## `x = a + b;` \centering
 
 ::: columns
+:::: {.column width=42%}
+
+- Expressions produce \cemph{values}
+- Statements produce \cemph{effects}
+
+\vspace{1.5em}
+
+- `alloca` reserves a stack slot per variable
+- `load` reads the slot into a register value
+- `store` writes a value back to the slot
+- No registers are assigned by us --- LLVM
+  handles register allocation
+
+\vspace{1.5em}
+
+The `alloca`/load/store discipline is
+all we need; the optimizer turns it into
+SSA form
+
+::::
 :::: {.column width=50%}
 
+```llvm
+%x = alloca i64
+%a = alloca i64
+%b = alloca i64
+
+; a + b
+%1 = load i64, ptr %a
+%2 = load i64, ptr %b
+%3 = add i64 %1, %2
+
+; x =
+store i64 %3, ptr %x
 ```
-if (c) s1 else s2
+
+::::
+:::
+
+# if
+
+## Terminators and basic blocks \centering
+
+::: columns
+:::: {.column width=42%}
+
+- `if` splits the control flow
+- The function body is a list of
+  \cemph{basic blocks}, each ending with a
+  \cemph{terminator}
+- `br` is the terminator for branches:
+  a condition and two targets
+
+\vspace{1.5em}
+
+- The emitter creates the blocks,
+  remembers which is which,
+  fills them in order
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
 ```
 
 ```{=latex}
-\begin{minipage}[c][.42\textheight][c]{\linewidth}
-\centering
 \begin{tikzpicture}[
     ->,>=latex,
     every node/.style={font=\footnotesize,align=left},
-    n/.style={draw,rounded corners,minimum width=4.5em,minimum height=1.8em},
+    base/.style={minimum width={5em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    every matrix/.style={row sep=1.6em,column sep=1.5em,ampersand replacement=\&,every node/.style={block}},
   ]
-  \node[n] (entry) {entry};
-  \node[n,below=1.4em of entry] (then) {then};
-  \node[n,below=1.4em of then] (els) {else};
-  \node[n,below=1.4em of els] (merge) {merge};
-  \draw (entry) -- (then);
-  \draw (entry) -- (els);
-  \draw (then) -- (merge);
-  \draw (els) -- (merge);
+
+  \matrix {
+  \& \node [block] (entry) {entry}; \& \\
+  \node [block] (then) {then}; \& \& \node [block] (else) {else}; \\
+  \& \node [block] (merge) {merge}; \\
+  };
+  \graph [use existing nodes] {
+    entry -> then; entry -> else;
+    then -> merge; else -> merge;
+  };
 \end{tikzpicture}
+```
+
+\vspace{0.8em}
+
+```llvm
+br i1 %cond, label %then, label %else
 ```
 
 ```{=latex}
@@ -616,56 +1069,137 @@ if (c) s1 else s2
 ```
 
 ::::
-:::: {.column width=45%}
-
-- same traversal --- but now it
-  \cemph{creates basic blocks} and
-  terminates them (`br`)
-- `if` produces \cemphp{control}, not values
-- `break`/`continue`: leaf nodes in the
-  AST --- but the emitter must carry
-  "which loop am I inside" context
-- alloca for the condition variables,
-  `br i1` for the branches --- \cemph{no phi
-  functions, this semester is alloca-land}
-
-\vspace{0.6em}
-That's your codegen deadline exercise --- two weeks.
-
-::::
 :::
 
-# Takeaways
+# while
 
-##
+## A cycle in the control flow graph \centering
 
 ::: columns
-:::: {.column width=55%}
+:::: {.column width=42%}
 
-- one AST, three shapes ---
-  language idiom decides, trade-offs transfer
-- production compilers scale the same
-  ideas (Clang hierarchy, Roslyn
-  snapshots, OCaml dogfooding)
-- traversal choice = \cemph{picking your
-  painful axis}
-- codegen is just another traversal ---
-  \cemphp{statements vs expressions} is the fork
+- Same building blocks: blocks, terminators, `br`
+- The back edge makes it a loop
+
+\vspace{1.5em}
+
+- New blocks are appended; the emitter
+  tracks the \cemph{current} block explicitly,
+  switching to it when control flow merges
 
 ::::
-:::: {.column width=40%}
+:::: {.column width=50%}
 
-Homework (voluntary, ungraded):
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
+```
 
-- add `If`/`While` (and `Break`/`Continue`)
-  to your AST, in your style
-- write the `emit`-skeleton for `if`:
-  entry/then/else/merge blocks,
-  alloca style
+```{=latex}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={5em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    every matrix/.style={row sep=1.6em,column sep=1.5em,ampersand replacement=\&,every node/.style={block}},
+  ]
+
+  \matrix {
+  \& \node [block] (entry) {entry}; \& \\
+  \& \node [block] (cond) {cond}; \& \\
+  \node [block] (body) {body}; \& \& \node [block] (exit) {exit}; \\
+  };
+  \graph [use existing nodes] {
+    entry -> cond; cond -> body;
+    cond -> exit; body -> cond;
+  };
+\end{tikzpicture}
+```
 
 \vspace{0.8em}
-feeds the parser deadline (this week)
-and the codegen window (two weeks)
+
+```llvm
+cond:
+  br i1 %c, label %body, label %exit
+body:
+  ...
+  br label %cond
+```
+
+```{=latex}
+\end{minipage}
+```
 
 ::::
 :::
+
+# break and continue
+
+## The targets live in the emitter, not in the tree \centering
+
+::: columns
+:::: {.column width=45%}
+
+- `break` / `continue` are just jumps ---
+  but to blocks of the \cemph{enclosing loop}
+- The node itself does not know its target
+- The emitter keeps a stack of
+  `(break target, continue target)` pairs,
+  pushed by `while` / `for`, popped after
+
+\vspace{1.5em}
+
+- Same idea as symbol tables:
+  the emitter carries context that
+  the AST does not contain
+
+::::
+:::: {.column width=45%}
+
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={5em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+    block/.style={n,rectangle},
+    every matrix/.style={row sep=1.6em,column sep=1.5em,ampersand replacement=\&,every node/.style={block}},
+  ]
+
+  \matrix {
+  \& \node [block] (cond) {cond}; \& \\
+  \node [block] (body) {body}; \& \& \node [block] (exit) {exit}; \\
+  };
+  \graph [use existing nodes] {
+    cond -> body; cond -> exit; body -> cond;
+  };
+  \draw[->,dashed] (body) to[bend right=35] node[below right] {\cemphp{break}} (exit);
+  \draw[->,dashed] (body) to[bend left=15] node[above left] {\cemph{continue}} (cond);
+\end{tikzpicture}
+```
+
+\vspace{0.8em}
+
+`break` $\to$ exit block
+
+`continue` $\to$ condition block
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# {.plain}
+
+\centering
+```{=latex}
+{\fontsize{48pt}{7.2}\selectfont Q\&A }
+```
