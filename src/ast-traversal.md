@@ -14,7 +14,7 @@ title: "AST design"
   - Object-oriented languages (Java, Scala)
   - Functional languages (OCaml)
 - Traversal: where does the operation live, and what does it cost
-- Visitor, switch, pattern match --- and why external
+- Visitor, switch, pattern match, and why external
   traversal wins for compilers
 - How production compilers do it
 - IR generation as a traversal
@@ -192,7 +192,7 @@ $\Longrightarrow$ \cemph{ADT}
 
 \vspace{0.3em}
 \centering
-All three encode the same tree --- nothing here decides
+All three encode the same tree. Nothing here decides
 the traversal style yet
 
 # Where does the operation live?
@@ -247,7 +247,7 @@ static long eval(Expr e, Env env) {
 
 \vspace{0.5em}
 \centering
-Two different axes --- the language decides
+Two different axes. The language decides
 how painful each encoding is
 
 # External traversal in C: switch
@@ -282,13 +282,13 @@ int64_t eval
 ::::
 :::: {.column width=46%}
 
-- Dispatch on the \cemph{tag field} ---
+- Dispatch on the \cemph{tag field}:
   the representation must carry one
 - The whole operation is one function:
   new operations never touch the node struct
 - \cemphp{No exhaustiveness checking}: forget a
-  case and the compiler stays silent ---
-  this is discipline, not safety
+  case and the compiler stays silent.
+  This is discipline, not safety
 - C requires it; Zig's tagged `switch` does
   check
 
@@ -328,7 +328,7 @@ record Add(Expr l, Expr r)
 - Java has no sum types and no pattern
   match (pre-21): the visitor
   \cemph{simulates} one
-- `accept()` is a tag in disguise ---
+- `accept()` is a tag in disguise:
   double dispatch routes to the
   right `visitXxx`
 - `R` type parameter: one visitor
@@ -380,7 +380,7 @@ def eval(e: Expr): Long =
   visitor interface, no `R`
   parameter
 - The same idea OCaml's `match`
-  gives over variants --- here over
+  gives over variants, here over
   a class hierarchy
 
 ::::
@@ -394,7 +394,7 @@ def eval(e: Expr): Long =
 :::: {.column width=55%}
 
 - Java 21: sealed interfaces +
-  pattern `switch` --- the visitor's
+  pattern `switch`: the visitor's
   job, done by the language
 
 ```java
@@ -412,8 +412,8 @@ static long eval(Expr e) {
   matching over sealed types is
   idiomatic
 - The visitor remains the encoding
-  for older Java code bases ---
-  and the standard library
+  for older Java code bases and
+  the standard library
 
 ::::
 :::: {.column width=42%}
@@ -425,8 +425,8 @@ static long eval(Expr e) {
 
 \vspace{2em}
 
-The visitor is not a rival mechanism ---
-it is what external dispatch looks like
+The visitor is not a rival mechanism.
+It is what external dispatch looks like
 when the language does not provide it
 
 \vspace{1em}
@@ -466,17 +466,17 @@ external (switch/visitor/match) & easy & painful \\
 \vspace{1em}
 
 - \cemph{Internal}: one new node kind is one new
-  class --- but the operation is scattered
+  class, but the operation is scattered
   across all of them
 - \cemph{External}: one new operation is one new
-  function --- but adding a node kind means
+  function, but adding a node kind means
   touching every operation
 
 \vspace{1.5em}
 
 \cemphp{Good for frontend}: compilers run
 \emph{many passes} over a \emph{slowly growing}
-node set --- external traversal pays off
+node set. External traversal pays off
 
 ::::
 :::: {.column width=48%}
@@ -574,41 +574,41 @@ def emit(e: Expr)(
 
 \cemph{Tagged unions}
 
-- CPython --- `A_Expr`, op enums
-- GCC --- `tree_code` over `union tree_node`
-- rustc --- `enum ExprKind`
-- Go --- `ir.Op` over a node struct
-- LLVM SelectionDAG --- `ISD::NodeType`
-- Zig --- `std.zig.Ast`, tag per node
+- CPython: `A_Expr`, op enums
+- GCC: `tree_code` over `union tree_node`
+- rustc: `enum ExprKind`
+- Go: `ir.Op` over a node struct
+- LLVM SelectionDAG: `ISD::NodeType`
+- Zig: `std.zig.Ast`, tag per node
 
 ::::
 :::: {.column width=31%}
 
 \cemph{ADTs}
 
-- GHC --- `HsExpr` per pass
-- OCaml compiler --- `Parsetree`
-- Scala 3 --- `Tree` ADT
-- F\# --- `SynExpr`
-- Elm --- `Expr`
+- GHC: `HsExpr` per pass
+- OCaml compiler: `Parsetree`
+- Scala 3: `Tree` ADT
+- F\#: `SynExpr`
+- Elm: `Expr`
 
 ::::
 :::: {.column width=31%}
 
 \cemphp{Class hierarchies}
 
-- Clang --- `Stmt`/`Expr` hierarchy
-- Swift --- `Syntax` protocol tree
-- Roslyn --- green/red trees
-- javac --- `JCTree` subclasses
-- V8 --- `AstNode` subclasses
+- Clang: `Stmt`/`Expr` hierarchy
+- Swift: `Syntax` protocol tree
+- Roslyn: green/red trees
+- javac: `JCTree` subclasses
+- V8: `AstNode` subclasses
 
 ::::
 :::
 
 \vspace{1em}
 \centering
-Whatever the representation --- the traversals
+Whatever the representation, the traversals
 on top are external: switch, visitor, or match
 
 # What real compilers do
@@ -689,15 +689,15 @@ ADT parameterized by pass
 ::: columns
 :::: {.column width=48%}
 
-- Traversal: `StmtVisitor` --- the
+- Traversal: `StmtVisitor`, the
   visitor pattern over a class
   hierarchy, state in the visitor
-- `Stmt`/`Expr` --- about a hundred node
+- `Stmt`/`Expr`: about a hundred node
   classes, one per syntactic form
 - Every node carries a kind tag: cheap
   `isa`/`dyn_cast` without RTTI
 - Uniform child storage: `BinaryOperator`
-  keeps `Stmt *SubExprs[2]` --- children
+  keeps `Stmt *SubExprs[2]`: children
   typed `Stmt*`, not dedicated fields
 - All nodes allocated in the `ASTContext`
   arena; freed once, when the translation
@@ -744,18 +744,18 @@ public:
 ::: columns
 :::: {.column width=48%}
 
-- Traversal: `match` on the variant ---
-  external dispatch, exhaustiveness
+- Traversal: `match` on the variant.
+  External dispatch, exhaustiveness
   checked by the compiler
-- `enum ExprKind` --- about a hundred
+- `enum ExprKind`: about a hundred
   variants, one per syntactic form
 - Children are `Box<Expr>` and
-  `ThinVec<Box<Expr>>` --- boxed, since
+  `ThinVec<Box<Expr>>`, boxed since
   enum variants must have one size
 - Per-phase arenas: the AST is built,
   used, and dropped together
 - AST is only the first tree: lowered to
-  HIR, then to MIR --- each tree much
+  HIR, then to MIR, each tree much
   smaller than the last
 
 ::::
@@ -801,7 +801,7 @@ pub enum ExprKind {
 ::: columns
 :::: {.column width=48%}
 
-- Traversal: plain `match` --- one walk
+- Traversal: plain `match`, one walk
   per compiler pass
 - One ADT per syntactic category:
   `HsExpr`, `HsPat`, `HsType`, \dots
@@ -834,7 +834,7 @@ type instance XOpApp GhcTc =
 \vspace{0.8em}
 
 Same constructor, different payloads per
-pass --- and one variant is \cemph{gone} after
+pass, and one variant is \cemph{gone} after
 typechecking
 
 \vspace{0.8em}
@@ -854,8 +854,8 @@ typechecking
 :::: {.column width=42%}
 
 - \cemph{Name resolution}, \cemph{type checking},
-  \cemph{constant folding} --- each a traversal
-- \cemph{IR generation} --- one more walk over
+  \cemph{constant folding}: each a traversal
+- \cemph{IR generation}: one more walk over
   the same tree
 
 \vspace{1.5em}
@@ -865,7 +865,7 @@ typechecking
   `x = ...` emits a `store`
 - `alloca` reserves a stack slot per
   variable; `load`/`store` move values
-- No registers are assigned by us ---
+- No registers are assigned by us:
   LLVM handles register allocation
 
 ::::
@@ -974,7 +974,7 @@ class EmitVisitor
 - Same traversal; the dispatch is
   `accept()` instead of `switch`
 - The output buffer, symbol table,
-  builder --- all live in the visitor
+  builder, all live in the visitor
   object
 - `accept(this)` passes the visitor
   down: children reuse the same
@@ -1017,7 +1017,7 @@ def emit(e: Expr): String =
   until handled
 - Context (output buffer, scopes,
   loop stack) is threaded through
-  parameters --- or wrapped in a
+  parameters, or wrapped in a
   class, at which point it is a
   visitor again
 
@@ -1217,7 +1217,7 @@ body:
 ::: columns
 :::: {.column width=45%}
 
-- `break` / `continue` are just jumps ---
+- `break` / `continue` are just jumps,
   but to blocks of the \cemph{enclosing loop}
 - The node itself does not know its target
 - The emitter keeps a stack of
