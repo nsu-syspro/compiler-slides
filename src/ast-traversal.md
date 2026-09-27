@@ -53,8 +53,8 @@ The tree for `a + b * c` is the same in every language.
 
 What differs is \cemph{how the type system expresses it}:
 
-- is there a sum type? three idioms,
-  three trade-offs
+- three idioms for sum types ---
+  three sets of trade-offs
 
 ::::
 :::: {.column width=48%}
@@ -90,8 +90,12 @@ What differs is \cemph{how the type system expresses it}:
 
 ##
 
+```{=latex}
+\lstset{style=small}
+```
+
 ::: columns
-:::: {.column width=55%}
+:::: {.column width=58%}
 
 ```c
 enum expr_kind { EXPR_INT, EXPR_VAR,
@@ -107,19 +111,14 @@ struct expr {
 };
 
 struct expr *add(struct expr *l,
-                 struct expr *r) {
-    struct expr *e = malloc(sizeof *e);
-    e->kind = EXPR_ADD;
-    e->l = l; e->r = r;
-    return e;
-}
+                 struct expr *r);
 ```
 
 ::::
 :::: {.column width=40%}
 
 - data is \cemph{one struct with a tag}
-- Zig: `union(enum) { int: i64, var: []u8, add: ... }`
+- Zig: `union(enum) { int: i64, ... }`
   - tag + payload handled by the language
 - memory: manual (`malloc`/`free` or arena)
 - **who has this shape at home?**
@@ -259,15 +258,6 @@ Your language pushed you into a corner --- now you own that corner's trade-offs.
 
 \cemphp{Roslyn} (C\#) --- red-green trees
 
-```{=latex}
-\begin{minipage}[c][.35\textheight][c]{\linewidth}
-\centering
-```
-
-```{=latex}
-\end{minipage}
-```
-
 - \cemph{green}: compact, immutable, no positions --- sharing everywhere
 - \cemph{red}: positions + parent links, mostly cached views
 - why: IDE undo, cheap snapshots
@@ -394,37 +384,45 @@ many operations
 
 ##
 
+```{=latex}
+\lstset{style=small}
+```
+
 ::: columns
-:::: {.column width=55%}
+:::: {.column width=48%}
 
 ```c
 /* C: silent if you forget a case */
 int64_t eval(const struct expr *e,
              const struct env *env) {
     switch (e->kind) {
-    case EXPR_INT: return e->int_val;
-    case EXPR_VAR: return lookup(env, e->var_name);
-    case EXPR_ADD: return eval(e->l, env)
-                      + eval(e->r, env);
-    case EXPR_MUL: return eval(e->l, env)
-                      * eval(e->r, env);
+    case EXPR_INT:
+        return e->int_val;
+    case EXPR_VAR:
+        return lookup(env, e->var_name);
+    case EXPR_ADD:
+        return eval(e->l, env)
+             + eval(e->r, env);
+    case EXPR_MUL:
+        return eval(e->l, env)
+             * eval(e->r, env);
     }
     return -1; /* ...and this */
 }
 ```
 
 ::::
-:::: {.column width=42%}
+:::: {.column width=49%}
 
 ```zig
 // Zig: the compiler IS the checklist
 fn eval(e: Expr, env: *Env) !i64 {
     return switch (e) {
-        .int => |v| v,
-        .var => |name| env.lookup(name),
-        .add => |p| try eval(p.l, env)
+        .int  => |v| v,
+        .var  => |n| env.get(n),
+        .add  => |p| try eval(p.l, env)
                    + try eval(p.r, env),
-        .mul => |p| try eval(p.l, env)
+        .mul  => |p| try eval(p.l, env)
                    * try eval(p.r, env),
     };
 }
@@ -534,8 +532,12 @@ ret i64 %t2
 
 ##
 
+```{=latex}
+\lstset{style=small}
+```
+
 ::: columns
-:::: {.column width=52%}
+:::: {.column width=58%}
 
 ```c
 /* C: one emit function */
@@ -554,7 +556,7 @@ LLVMValueRef emit(const struct expr *e,
 ```
 
 ::::
-:::: {.column width=45%}
+:::: {.column width=39%}
 
 ```ocaml
 (* OCaml: the same traversal *)
