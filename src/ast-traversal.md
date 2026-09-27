@@ -12,8 +12,7 @@ title: "AST design"
 - How the same abstract syntax tree is represented in
   - Imperative languages (C, Zig)
   - Object-oriented languages (Scala)
-  - Both at once: Scala can express the class hierarchy
-    and the ADT; OCaml shows the classic ADT form
+  - Scala can express both: the class hierarchy and the ADT
 - Traversal: where does the operation live, and what does it cost
 - Visitor, switch, pattern match, and why external
   traversal wins for compilers
@@ -118,7 +117,7 @@ $(a + b) \cdot c$
 
 # Three representations
 
-## Imperative \hfill Object-oriented \hfill Functional \centering
+## Imperative \hfill Object-oriented \hfill ADT \centering
 
 ```{=latex}
 \lstset{style=small}
@@ -171,12 +170,12 @@ case class Mul(l: Expr, r: Expr)
 ::::
 :::: {.column width=31%}
 
-```ocaml
-type expr =
-  | Int of int64
-  | Var of string
-  | Add of expr * expr
-  | Mul of expr * expr
+```scala
+enum Expr:
+  case IntLit(value: Long)
+  case Var(name: String)
+  case Add(l: Expr, r: Expr)
+  case Mul(l: Expr, r: Expr)
 ```
 
 \vspace{0.3em}
