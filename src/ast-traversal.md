@@ -564,34 +564,34 @@ def emit(e: Expr)(
 
 \cemph{Tagged unions}
 
-- CPython: `A_Expr`, op enums
-- GCC: `tree_code` over `union tree_node`
-- rustc: `enum ExprKind`
+- GCC: `tree_code` over
+  `union tree_node`
+- CPython: op enums over node
+  structs (classic form)
 - Go: `ir.Op` over a node struct
-- LLVM SelectionDAG: `ISD::NodeType`
 - Zig: `std.zig.Ast`, tag per node
-
-::::
-:::: {.column width=31%}
-
-\cemph{ADTs}
-
-- GHC: `HsExpr` per pass
-- OCaml compiler: `Parsetree`
-- Scala 3: `Tree` ADT
-- F\#: `SynExpr`
-- Elm: `Expr`
 
 ::::
 :::: {.column width=31%}
 
 \cemphp{Class hierarchies}
 
+- scalac: `Trees.scala`, `Tree`
+  subclasses
 - Clang: `Stmt`/`Expr` hierarchy
-- Swift: `Syntax` protocol tree
-- Roslyn: green/red trees
 - javac: `JCTree` subclasses
 - V8: `AstNode` subclasses
+
+::::
+:::: {.column width=31%}
+
+\cemph{ADTs}
+
+- Scala 3 (dotty): the same `Tree`
+  as `case class` ADT
+- OCaml compiler: `Parsetree`
+- F\#: `SynExpr`
+- Elm: `Expr`
 
 ::::
 :::
@@ -600,73 +600,6 @@ def emit(e: Expr)(
 \centering
 Whatever the representation, the traversals
 on top are external: switch, visitor, or match
-
-# What real compilers do
-
-## Deep dives \centering
-
-::: columns
-:::: {.column width=31%}
-
-```{=latex}
-\begin{minipage}[c][.55\textheight][c]{\linewidth}
-\centering
-```
-
-\vspace{3em}
-
-\cemph{Clang}
-
-class hierarchy + arena
-
-\vspace{1em}
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::: {.column width=31%}
-
-```{=latex}
-\begin{minipage}[c][.55\textheight][c]{\linewidth}
-\centering
-```
-
-\vspace{3em}
-
-\cemph{rustc}
-
-enum + arena
-
-\vspace{1em}
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::: {.column width=31%}
-
-```{=latex}
-\begin{minipage}[c][.55\textheight][c]{\linewidth}
-\centering
-```
-
-\vspace{3em}
-
-\cemph{GHC}
-
-ADT parameterized by pass
-
-\vspace{1em}
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::
 
 # Clang
 
@@ -725,9 +658,9 @@ public:
 ::::
 :::
 
-# rustc
+# GCC
 
-## enum + arena \centering
+## tagged union + arena \centering
 
 ```{=latex}
 \lstset{style=small}
@@ -736,19 +669,18 @@ public:
 ::: columns
 :::: {.column width=48%}
 
-- Traversal: `match` on the variant.
-  External dispatch, exhaustiveness
-  checked by the compiler
-- `enum ExprKind`: about a hundred
-  variants, one per syntactic form
-- Children are `Box<Expr>` and
-  `ThinVec<Box<Expr>>`, boxed since
-  enum variants must have one size
-- Per-phase arenas: the AST is built,
-  used, and dropped together
-- AST is only the first tree: lowered to
-  HIR, then to MIR, each tree much
-  smaller than the last
+- One node type: `union tree_node`,
+  the `tree` is a pointer to it
+- `enum tree_code`: over two hundred
+  codes, one per form
+  (`INTEGER_CST`, `PLUS_EXPR`, ...)
+- Traversal: `switch` on the code,
+  guided by `tree_code_class`
+- Nodes live in the GC-managed
+  arena (`GGC`), collected a whole
+  generation at once
+- The same `tree` from parser to
+  code generation
 
 ::::
 :::: {.column width=48%}
@@ -757,36 +689,32 @@ public:
 \centering
 ```
 
-```rust
-pub enum ExprKind {
-  /// A literal (e.g., `1`).
-  Lit(token::Lit),
-  /// A binary operation
-  /// (e.g., `a + b`).
-  Binary(BinOp, Box<Expr>,
-         Box<Expr>),
-  /// An `if` block, with an
-  /// optional `else` block.
-  If(Box<Expr>, Box<Block>,
-     Option<Box<Expr>>),
-  // ... about 100 variants
-}
+```c
+/* tree.def: one line per code */
+DEFTREECODE (INTEGER_CST,
+  "integer_cst", tcc_constant, 0)
+DEFTREECODE (PLUS_EXPR,
+  "plus_expr", tcc_binary, 2)
+
+/* tree-core.h */
+enum tree_code : unsigned {
+#include "all-tree.def"
+  MAX_TREE_CODES
+};
+
+/* the node itself */
+union tree_node {
+  struct tree_base base;
+  struct tree_int_cst int_cst;
+};
 ```
-
-\vspace{0.8em}
-
-<!-- QR candidate (teacher decides whether/where to include):
-\qrcode[height=2.2cm]{https://github.com/rust-lang/rust/blob/master/compiler/rustc_ast/src/ast.rs}
-
-[compiler/rustc\_ast/src/ast.rs]{.small}
--->
 
 ::::
 :::
 
-# GHC
+# scalac (Scala 3)
 
-## ADT parameterized by pass \centering
+## class hierarchy, one tree per pass \centering
 
 ```{=latex}
 \lstset{style=small}
@@ -795,19 +723,19 @@ pub enum ExprKind {
 ::: columns
 :::: {.column width=48%}
 
-- Traversal: plain `match`, one walk
-  per compiler pass
-- One ADT per syntactic category:
-  `HsExpr`, `HsPat`, `HsType`, \dots
-- The ADT is parameterized by the
-  \cemph{compiler pass}: `GhcPs` (parsed),
-  `GhcRn` (renamed), `GhcTc` (typechecked)
-- Type families attach per-phase payloads:
-  after renaming a binary application
-  records its \cemph{fixity}; after
-  typechecking the same variant cannot
-  appear at all
-- Illegal tree states do not typecheck
+- `abstract class Tree[T]`: node
+  classes in `Trees.scala`, one per
+  form (`Ident`, `Apply`, ...)
+- `T` is the pass: `Untyped` from
+  the parser, typed after the typer;
+  the type lives in the node
+- Traversal: `TreeTraverser` /
+  `TreeMap` base classes, clients
+  override per-node callbacks
+- Types are set copy-on-write: a
+  tree is reused across passes
+- `case class` nodes double as an
+  ADT: `match` works on them too
 
 ::::
 :::: {.column width=48%}
@@ -816,28 +744,24 @@ pub enum ExprKind {
 \centering
 ```
 
-```haskell
--- OpApp not present in GhcTc pass
-type instance XOpApp GhcPs =
-  NoExtField
-type instance XOpApp GhcRn = Fixity
-type instance XOpApp GhcTc =
-  DataConCantHappen
+```scala
+abstract class Tree[+T <: Untyped]
+  extends Positioned, SrcPos
+
+case class Ident[+T <: Untyped]
+  (name: Name) extends RefTree[T]
+
+case class Apply[+T <: Untyped]
+  (fun: Tree[T], args: List[Tree[T]])
+
+case class Literal[+T <: Untyped]
+  (const: Constant) extends Tree[T]
 ```
 
-\vspace{0.8em}
+\vspace{0.5em}
 
-Same constructor, different payloads per
-pass, and one variant is \cemph{gone} after
-typechecking
-
-\vspace{0.8em}
-
-<!-- QR candidate (teacher decides whether/where to include):
-\qrcode[height=2.2cm]{https://github.com/ghc/ghc/blob/master/compiler/GHC/Hs/Expr.hs}
-
-[compiler/GHC/Hs/Expr.hs]{.small}
--->
+\cemph{T} selects the pass: `Untyped`
+or the typed tree
 
 ::::
 :::
