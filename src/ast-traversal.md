@@ -11,8 +11,9 @@ title: "AST design"
 
 - How the same abstract syntax tree is represented in
   - Imperative languages (C, Zig)
-  - Object-oriented languages (Java, Scala)
-  - Functional languages (OCaml)
+  - Object-oriented languages (Scala)
+  - Both at once: Scala can express the class hierarchy
+    and the ADT; OCaml shows the classic ADT form
 - Traversal: where does the operation live, and what does it cost
 - Visitor, switch, pattern match, and why external
   traversal wins for compilers
@@ -150,18 +151,16 @@ struct expr {
 ::::
 :::: {.column width=31%}
 
-```java
-sealed interface Expr
-  permits IntLit, Var,
-          Add, Mul { }
-record IntLit(long value)
-  implements Expr { }
-record Var(String name)
-  implements Expr { }
-record Add(Expr l, Expr r)
-  implements Expr { }
-record Mul(Expr l, Expr r)
-  implements Expr { }
+```scala
+sealed trait Expr
+case class IntLit(value: Long)
+  extends Expr
+case class Var(name: String)
+  extends Expr
+case class Add(l: Expr, r: Expr)
+  extends Expr
+case class Mul(l: Expr, r: Expr)
+  extends Expr
 ```
 
 \vspace{0.3em}
@@ -180,8 +179,7 @@ type expr =
   | Mul of expr * expr
 ```
 
-\vspace{1em}
-
+\vspace{0.3em}
 \centering
 $\Longrightarrow$ \cemph{ADT}
 
@@ -208,17 +206,15 @@ the traversal style yet
 
 \cemph{Internal: methods on nodes}
 
-```java
-record Add(Expr l, Expr r)
-    implements Expr {
-
-  long eval(Env env) {
-    return l.eval(env)
-         + r.eval(env);
-  }
-}
+```scala
+// class hierarchy: method on nodes
+def eval(env: Env): Long =
+  this match
+    case Add(l, r) =>
+      l.eval(env) + r.eval(env)
 // eval() also in IntLit, Var, Mul
 ```
+
 - Every node class carries its copy
   of the operation
 
@@ -227,17 +223,15 @@ record Add(Expr l, Expr r)
 
 \cemphp{External: functions over the tree}
 
-```java
-static long eval(Expr e, Env env) {
-  return switch (e) {
-    case IntLit i -> i.value();
-    case Var v    -> env.get(v.name());
-    case Add a -> eval(a.l(), env)
-                + eval(a.r(), env);
-    case Mul m -> eval(m.l(), env)
-                * eval(m.r(), env);
-  };
-}
+```scala
+def eval(e: Expr, env: Env): Long =
+  e match
+    case IntLit(v) => v
+    case Var(x)    => env(x)
+    case Add(l, r) =>
+      eval(l, env) + eval(r, env)
+    case Mul(l, r) =>
+      eval(l, env) * eval(r, env)
 ```
 
 - One place for the whole operation
@@ -295,7 +289,7 @@ int64_t eval
 ::::
 :::
 
-# External traversal in Java: visitor
+# External traversal in Scala: visitor
 
 ## External dispatch, hand-rolled for class hierarchies \centering
 
@@ -306,27 +300,26 @@ int64_t eval
 ::: columns
 :::: {.column width=50%}
 
-```java
-interface Visitor<R> {
-  R visitInt(IntLit e);
-  R visitVar(Var e);
-  R visitAdd(Add e);
-  R visitMul(Mul e);
+```scala
+trait Visitor[R] {
+  def visitInt(e: IntLit): R
+  def visitVar(e: Var): R
+  def visitAdd(e: Add): R
+  def visitMul(e: Mul): R
 }
 
-record Add(Expr l, Expr r)
-    implements Expr {
-  R accept(Visitor<R> v) {
-    return v.visitAdd(this);
-  }
+case class Add(l: Expr, r: Expr)
+    extends Expr {
+  def accept(v: Visitor[R]): R =
+    v.visitAdd(this)
 }
 ```
 
 ::::
 :::: {.column width=46%}
 
-- Java has no sum types and no pattern
-  match (pre-21): the visitor
+- Java (pre-21) has no sum types and no
+  pattern match: the visitor
   \cemph{simulates} one
 - `accept()` is a tag in disguise:
   double dispatch routes to the
@@ -335,7 +328,7 @@ record Add(Expr l, Expr r)
   interface per result type
 - No compiler check for coverage:
   a missing `visitXxx` is a runtime
-  `NullPointerException`
+  error
 
 ::::
 :::
@@ -379,9 +372,8 @@ def eval(e: Expr): Long =
 - \cemph{No `accept()` boilerplate}, no
   visitor interface, no `R`
   parameter
-- The same idea OCaml's `match`
-  gives over variants, here over
-  a class hierarchy
+- The same dispatch the visitor
+  simulates, as a language feature
 
 ::::
 :::
@@ -520,20 +512,19 @@ is fine with internal dispatch
 
 \cemph{Visitor: fields on the object}
 
-```java
-class EmitVisitor
-    implements Visitor<Value> {
-  StringBuilder out;
-  SymbolTable scopes;
-  Deque<LoopCtx> loops;
-  // push/pop around loops
+```scala
+class EmitVisitor(
+    val out: StringBuilder,
+    var scopes: SymbolTable,
+    var loops: List[LoopCtx]
+) extends Visitor[Value] {
 
-  Value visitAdd(Add e) {
-    return builder.add(
-      e.l().accept(this),
-      e.r().accept(this));
-  }
+  def visitAdd(e: Add): Value =
+    builder.add(
+      e.l.accept(this),
+      e.r.accept(this))
 }
+// push/pop around loops
 ```
 
 ::::
@@ -726,9 +717,11 @@ public:
 
 \vspace{0.8em}
 
+<!-- QR candidate (teacher decides whether/where to include):
 \qrcode[height=2.2cm]{https://github.com/llvm/llvm-project/blob/main/clang/include/clang/AST/Expr.h}
 
 [clang/AST/Expr.h]{.small}
+-->
 
 ::::
 :::
@@ -783,9 +776,11 @@ pub enum ExprKind {
 
 \vspace{0.8em}
 
+<!-- QR candidate (teacher decides whether/where to include):
 \qrcode[height=2.2cm]{https://github.com/rust-lang/rust/blob/master/compiler/rustc_ast/src/ast.rs}
 
 [compiler/rustc\_ast/src/ast.rs]{.small}
+-->
 
 ::::
 :::
@@ -839,9 +834,11 @@ typechecking
 
 \vspace{0.8em}
 
+<!-- QR candidate (teacher decides whether/where to include):
 \qrcode[height=2.2cm]{https://github.com/ghc/ghc/blob/master/compiler/GHC/Hs/Expr.hs}
 
 [compiler/GHC/Hs/Expr.hs]{.small}
+-->
 
 ::::
 :::
@@ -949,21 +946,19 @@ const char *emit(struct expr *e) {
 ::: columns
 :::: {.column width=50%}
 
-```java
-class EmitVisitor
-    implements Visitor<String> {
-  StringBuilder out; // IR text
+```scala
+class EmitVisitor(
+  val out: StringBuilder
+) extends Visitor[String] {
 
-  String visitVar(Var e) {
-    return line(out,
-      "load i64, ptr %" + e.name());
-  }
+  def visitVar(e: Var): String =
+    line(out,
+      "load i64, ptr %" + e.name)
 
-  String visitAdd(Add e) {
-    var l = e.l().accept(this);
-    var r = e.r().accept(this);
-    return line(out,
-      "add i64 " + l + ", " + r);
+  def visitAdd(e: Add): String = {
+    val l = e.l.accept(this)
+    val r = e.r.accept(this)
+    line(out, s"add i64 $l, $r")
   }
 }
 ```
@@ -1071,11 +1066,11 @@ LLVMValueRef S = LLVMBuildAdd(
 
 \vspace{1em}
 
+<!-- QR candidate (teacher decides whether/where to include):
 \qrcode[height=3.2cm]{https://llvm.org/docs/tutorial/}
 
-\vspace{0.5em}
-
 [LLVM Tutorial: My First Language Frontend]{.small}
+-->
 
 ```{=latex}
 \end{minipage}
