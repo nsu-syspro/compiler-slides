@@ -13,10 +13,11 @@ title: "AST design"
   - Imperative languages (C, Zig)
   - Object-oriented languages (Java, Scala)
   - Functional languages (OCaml)
-- Memory management, construction from a parser, traversal
-- How production compilers represent their ASTs
-  - CPython, GCC, rustc, Go, Clang, GHC, \dots
-- Semantic checks and IR generation as traversals
+- Traversal: where does the operation live, and what does it cost
+- Visitor, switch, pattern match --- and why external
+  traversal wins for compilers
+- How production compilers do it
+- IR generation as a traversal
 
 ::::
 :::: {.column width=42%}
@@ -114,70 +115,9 @@ $(a + b) \cdot c$
 ::::
 :::
 
-# One AST, three families
+# Three representations
 
-##
-
-::: columns
-:::: {.column width=31%}
-
-```{=latex}
-\begin{minipage}[c][.55\textheight][c]{\linewidth}
-\centering
-```
-
-\vspace{2em}
-
-\cemph{Imperative}
-
-C, Zig
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::: {.column width=31%}
-
-```{=latex}
-\begin{minipage}[c][.55\textheight][c]{\linewidth}
-\centering
-```
-
-\vspace{2em}
-
-\cemph{Object-oriented}
-
-Java, Scala
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::: {.column width=31%}
-
-```{=latex}
-\begin{minipage}[c][.55\textheight][c]{\linewidth}
-\centering
-```
-
-\vspace{2em}
-
-\cemph{Functional}
-
-OCaml
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::
-
-# One AST, three families
-
-##
+## Imperative \hfill Object-oriented \hfill Functional \centering
 
 ```{=latex}
 \lstset{style=small}
@@ -206,6 +146,7 @@ struct expr {
 \centering
 \cemph{tagged union}
 
+\small arena-allocated in practice
 ::::
 :::: {.column width=31%}
 
@@ -213,7 +154,6 @@ struct expr {
 sealed interface Expr
   permits IntLit, Var,
           Add, Mul { }
-
 record IntLit(long value)
   implements Expr { }
 record Var(String name)
@@ -228,6 +168,7 @@ record Mul(Expr l, Expr r)
 \centering
 \cemphp{class hierarchy}
 
+\small GC
 ::::
 :::: {.column width=31%}
 
@@ -239,149 +180,86 @@ type expr =
   | Mul of expr * expr
 ```
 
-\vspace{2em}
+\vspace{1em}
 
 \centering
-$\Longrightarrow$
+$\Longrightarrow$ \cemph{ADT}
 
-\cemph{ADT}
-
-algebraic data type
+\small GC, immutable
 
 ::::
 :::
 
-# Memory management
+\vspace{0.3em}
+\centering
+All three encode the same tree --- nothing here decides
+the traversal style yet
 
-## Who owns the nodes? \centering
+# Where does the operation live?
 
-::: columns
-:::: {.column width=31%}
-
-\cemph{Manual / arena}
-
-- Nodes are heap-allocated and never freed individually
-- Arena (bump) allocator: allocate nodes one after another,
-  free the whole arena when the AST dies
-- In Zig the allocator is an explicit argument of every
-  allocation
-- In C: `malloc`, or wrap an arena in a few macros
-
-- Parents own children; the tree is a DAG-free ownership tree
-
-::::
-:::: {.column width=31%}
-
-\cemphp{Garbage collection}
-
-- JVM / .NET / Go: `new` and forget
-- Nodes reference each other freely
-- No ownership question, at the cost of
-  GC pauses and memory overhead
-
-- Immutable records fit GC particularly well:
-  no write barriers on old objects
-
-::::
-:::: {.column width=31%}
-
-\cemphp{Garbage collection}
-
-- OCaml: minor heap allocation is a pointer bump;
-  short-lived ASTs mostly die young
-- Values are immutable by default
-- Sharing instead of copying is safe: subtrees
-  can be reused across trees
-
-::::
-:::
-
-# Building the AST from a recursive descent parser
-
-##
+## Inside the nodes, or outside the tree \centering
 
 ```{=latex}
 \lstset{style=small}
 ```
 
 ::: columns
-:::: {.column width=31%}
+:::: {.column width=48%}
 
-\cemph{C / Zig}
-
-- Parse functions return nodes or
-  pointers to nodes
-
-```c
-struct expr *e =
-  make_add(parse_add(),
-           parse_mul());
-```
-
-- The node constructor is a plain
-  function; the allocation strategy
-  (malloc vs arena) is invisible
-  to the parser
-
-::::
-:::: {.column width=31%}
-
-\cemphp{Java / Scala}
-
-- Parse methods return `Expr`
+\cemph{Internal: methods on nodes}
 
 ```java
-Expr parseAdd() {
-    var l = parseMul();
-    while (next is "+") {
-        var r = parseMul();
-        l = new Add(l, r);
-    }
-    return l;
+record Add(Expr l, Expr r)
+    implements Expr {
+
+  long eval(Env env) {
+    return l.eval(env)
+         + r.eval(env);
+  }
+}
+// eval() also in IntLit, Var, Mul
+```
+- Every node class carries its copy
+  of the operation
+
+::::
+:::: {.column width=48%}
+
+\cemphp{External: functions over the tree}
+
+```java
+static long eval(Expr e, Env env) {
+  return switch (e) {
+    case IntLit i -> i.value();
+    case Var v    -> env.get(v.name());
+    case Add a -> eval(a.l(), env)
+                + eval(a.r(), env);
+    case Mul m -> eval(m.l(), env)
+                * eval(m.r(), env);
+  };
 }
 ```
 
-- Factory methods and builders when
-  node construction needs more than
-  field assignment
-
-::::
-:::: {.column width=31%}
-
-\cemph{OCaml}
-
-- Parse functions return values
-
-```ocaml
-(* left fold over the
-   multiplicative level *)
-let rec parse_mul () =
-  match op with
-  | Add -> Add (l, r)
-```
-
-- Constructed bottom-up; values,
-  not builders
-
-- Parser combinators are the
-  functional idiom --- details in
-  the Haskell course next semester
+- One place for the whole operation
 
 ::::
 :::
 
-# Traversal
+\vspace{0.5em}
+\centering
+Two different axes --- the language decides
+how painful each encoding is
 
-##
+# External traversal in C: switch
+
+## Needs a tag in the representation \centering
 
 ```{=latex}
 \lstset{style=small}
 ```
 
 ::: columns
-:::: {.column width=31%}
-
-\cemph{Switch on the tag}
+:::: {.column width=50%}
 
 ```c
 int64_t eval
@@ -401,12 +279,32 @@ int64_t eval
 }
 ```
 
-- No exhaustiveness check
+::::
+:::: {.column width=46%}
+
+- Dispatch on the \cemph{tag field} ---
+  the representation must carry one
+- The whole operation is one function:
+  new operations never touch the node struct
+- \cemphp{No exhaustiveness checking}: forget a
+  case and the compiler stays silent ---
+  this is discipline, not safety
+- C requires it; Zig's tagged `switch` does
+  check
 
 ::::
-:::: {.column width=31%}
+:::
 
-\cemphp{Visitor / double dispatch}
+# External traversal in Java: visitor
+
+## External dispatch, hand-rolled for class hierarchies \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=50%}
 
 ```java
 interface Visitor<R> {
@@ -424,78 +322,241 @@ record Add(Expr l, Expr r)
 }
 ```
 
-- One method per node class
-
 ::::
-:::: {.column width=31%}
+:::: {.column width=46%}
 
-\cemph{Pattern matching}
-
-```ocaml
-let rec eval env =
-  function
-  | Int n  -> n
-  | Var x  -> find x env
-  | Add (l, r) ->
-    eval env l
-    + eval env r
-  | Mul (l, r) ->
-    eval env l
-    * eval env r
-```
-
-- Exhaustiveness checked by the
-  compiler: forgetting a variant
-  is a warning or an error
+- Java has no sum types and no pattern
+  match (pre-21): the visitor
+  \cemph{simulates} one
+- `accept()` is a tag in disguise ---
+  double dispatch routes to the
+  right `visitXxx`
+- `R` type parameter: one visitor
+  interface per result type
+- No compiler check for coverage:
+  a missing `visitXxx` is a runtime
+  `NullPointerException`
 
 ::::
 :::
 
-# Traversal
+# External traversal in Scala: match
 
-## Kinds of traversal \centering
+## Sealed hierarchies make it safe \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=50%}
+
+```scala
+sealed trait Expr
+case class IntLit(value: Long)
+  extends Expr
+case class Var(name: String)
+  extends Expr
+case class Add(l: Expr, r: Expr)
+  extends Expr
+
+def eval(e: Expr): Long =
+  e match
+    case IntLit(v) => v
+    case Var(x)    => env(x)
+    case Add(l, r) =>
+      eval(l) + eval(r)
+```
+
+::::
+:::: {.column width=46%}
+
+- `sealed` hierarchy + `match` =
+  ADT-style external dispatch
+- The compiler checks
+  \cemph{exhaustiveness}: forgetting a
+  case is a compile error
+- \cemph{No `accept()` boilerplate}, no
+  visitor interface, no `R`
+  parameter
+- The same idea OCaml's `match`
+  gives over variants --- here over
+  a class hierarchy
+
+::::
+:::
+
+# Convergence
+
+## Modern OO languages adopt external dispatch \centering
 
 ::: columns
 :::: {.column width=55%}
 
-- \cemph{Compute a value} --- evaluation, constant folding
-- \cemph{Transform} --- desugaring, lowering to a smaller core
-- \cemph{Emit} --- IR generation: expression $\to$ value,
-  statement $\to$ effect
-- \cemph{Inspect} --- name resolution, semantic checks
+- Java 21: sealed interfaces +
+  pattern `switch` --- the visitor's
+  job, done by the language
 
-\vspace{1.5em}
+```java
+static long eval(Expr e) {
+  return switch (e) {
+    case IntLit i -> i.value();
+    case Add a -> eval(a.l())
+                + eval(a.r());
+    ...
+  };
+}
+```
 
-Each kind works with any of the three data structures;
-the data structure decides \cemph{how} the traversal is written,
-not \cemph{whether} it can be written
-
-- \cemph{add operation}: easy everywhere
-- \cemph{add node kind}: touches either every operation
-  (switch, match) or every node class (visitor)
+- Scala, Kotlin, Swift: pattern
+  matching over sealed types is
+  idiomatic
+- The visitor remains the encoding
+  for older Java code bases ---
+  and the standard library
 
 ::::
-:::: {.column width=40%}
+:::: {.column width=42%}
 
-representation $\times$ traversal
+```{=latex}
+\begin{minipage}[c][.5\textheight][c]{\linewidth}
+\centering
+```
 
-\vspace{0.8em}
+\vspace{2em}
 
-\begin{tabular}{p{5.2em}ll}
+The visitor is not a rival mechanism ---
+it is what external dispatch looks like
+when the language does not provide it
+
+\vspace{1em}
+
+Modern languages converge on
+\cemph{match}: external traversal
+becomes the default
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# Internal vs external
+
+## The trade-off table \centering
+
+::: columns
+:::: {.column width=48%}
+
+\vspace{0.5em}
+
+\small
+
+\begin{tabular}{lcc}
 \hline
  & \cemph{add op} & \cemphp{add kind} \\
 \hline
-tagged union & easy & all switches \\
-class hier.  & easy & all classes \\
-ADT          & easy & all matches \\
+internal (methods) & painful & easy \\
+\hline
+external (switch/visitor/match) & easy & painful \\
 \hline
 \end{tabular}
 
+\vspace{1em}
+
+- \cemph{Internal}: one new node kind is one new
+  class --- but the operation is scattered
+  across all of them
+- \cemph{External}: one new operation is one new
+  function --- but adding a node kind means
+  touching every operation
+
 \vspace{1.5em}
 
-All three choices pay the same price somewhere ---
-the differences are in \cemph{where} the compiler
-concentrates the cost
+\cemphp{Good for frontend}: compilers run
+\emph{many passes} over a \emph{slowly growing}
+node set --- external traversal pays off
+
+::::
+:::: {.column width=48%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+```
+
+Our course, concretely:
+
+- grammars 2--5 add node kinds once each:
+  `if`, `while`, functions, types
+- every stage re-walks the whole tree:
+  codegen now, semantic checks later
+- passes outnumber node-kind changes by far
+
+\vspace{1.5em}
+
+The honest counterpoint: application code
+where kinds churn faster than operations
+is fine with internal dispatch
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# State and context
+
+## Where the traversal keeps its data \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=48%}
+
+\cemph{Visitor: fields on the object}
+
+```java
+class EmitVisitor
+    implements Visitor<Value> {
+  StringBuilder out;
+  SymbolTable scopes;
+  Deque<LoopCtx> loops;
+  // push/pop around loops
+
+  Value visitAdd(Add e) {
+    return builder.add(
+      e.l().accept(this),
+      e.r().accept(this));
+  }
+}
+```
+
+::::
+:::: {.column width=48%}
+
+\cemphp{Match: explicit parameters}
+
+```scala
+def emit(e: Expr)(
+  out: StringBuilder,
+  scopes: SymbolTable,
+  loops: List[LoopCtx]
+): Value =
+  e match
+    case Add(l, r) =>
+      emit(l)(out, scopes, loops)
+      emit(r)(out, scopes, loops)
+    ...
+```
+
+- Same information, different carrier:
+  object fields vs a threaded
+  environment argument
 
 ::::
 :::
@@ -545,6 +606,11 @@ concentrates the cost
 ::::
 :::
 
+\vspace{1em}
+\centering
+Whatever the representation --- the traversals
+on top are external: switch, visitor, or match
+
 # What real compilers do
 
 ## Deep dives \centering
@@ -553,7 +619,7 @@ concentrates the cost
 :::: {.column width=31%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
 \centering
 ```
 
@@ -573,7 +639,7 @@ class hierarchy + arena
 :::: {.column width=31%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
 \centering
 ```
 
@@ -593,7 +659,7 @@ enum + arena
 :::: {.column width=31%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
 \centering
 ```
 
@@ -623,17 +689,19 @@ ADT parameterized by pass
 ::: columns
 :::: {.column width=48%}
 
-- `Stmt`/`Expr` --- about a hundred node classes,
-  one per syntactic form
-- Every node carries a kind tag: cheap `isa`/`dyn_cast`
-  without RTTI, needed for visitor-style dispatch
-- Uniform child storage: `BinaryOperator` keeps
-  `Stmt *SubExprs[2]` --- children typed `Stmt*`,
-  not dedicated fields
-- All nodes allocated in the `ASTContext` arena;
-  freed once, when the translation unit is done
-- Traversal: `StmtVisitor` --- visitor over
-  the class hierarchy
+- Traversal: `StmtVisitor` --- the
+  visitor pattern over a class
+  hierarchy, state in the visitor
+- `Stmt`/`Expr` --- about a hundred node
+  classes, one per syntactic form
+- Every node carries a kind tag: cheap
+  `isa`/`dyn_cast` without RTTI
+- Uniform child storage: `BinaryOperator`
+  keeps `Stmt *SubExprs[2]` --- children
+  typed `Stmt*`, not dedicated fields
+- All nodes allocated in the `ASTContext`
+  arena; freed once, when the translation
+  unit is done
 
 ::::
 :::: {.column width=48%}
@@ -676,17 +744,19 @@ public:
 ::: columns
 :::: {.column width=48%}
 
-- `enum ExprKind` --- about a hundred variants,
-  one per syntactic form
-- Children are `Box<Expr>` and `ThinVec<Box<Expr>>` ---
-  boxed, since enum variants must have one size
-- Allocated in per-phase arenas: the AST is built,
+- Traversal: `match` on the variant ---
+  external dispatch, exhaustiveness
+  checked by the compiler
+- `enum ExprKind` --- about a hundred
+  variants, one per syntactic form
+- Children are `Box<Expr>` and
+  `ThinVec<Box<Expr>>` --- boxed, since
+  enum variants must have one size
+- Per-phase arenas: the AST is built,
   used, and dropped together
-- AST is only the first tree: lowered to HIR,
-  then to MIR --- each tree much smaller than
-  the last
-- Traversal: `match` on the variant, often via
-  `#[derive]`-generated visitors
+- AST is only the first tree: lowered to
+  HIR, then to MIR --- each tree much
+  smaller than the last
 
 ::::
 :::: {.column width=48%}
@@ -731,19 +801,19 @@ pub enum ExprKind {
 ::: columns
 :::: {.column width=48%}
 
-- One ADT per syntactic category: `HsExpr`,
-  `HsPat`, `HsType`, \dots
-- The ADT is parameterized by the \cemph{compiler
-  pass}: `GhcPs` (parsed), `GhcRn` (renamed),
-  `GhcTc` (typechecked)
+- Traversal: plain `match` --- one walk
+  per compiler pass
+- One ADT per syntactic category:
+  `HsExpr`, `HsPat`, `HsType`, \dots
+- The ADT is parameterized by the
+  \cemph{compiler pass}: `GhcPs` (parsed),
+  `GhcRn` (renamed), `GhcTc` (typechecked)
 - Type families attach per-phase payloads:
-  after renaming a binary application records
-  its \cemph{fixity}; after typechecking the same
-  variant cannot appear at all
-- The type system makes illegal tree states
-  unrepresentable: a typechecked `OpApp` does
-  not typecheck
-- Traversal: plain `match`, one walk per pass
+  after renaming a binary application
+  records its \cemph{fixity}; after
+  typechecking the same variant cannot
+  appear at all
+- Illegal tree states do not typecheck
 
 ::::
 :::: {.column width=48%}
@@ -776,220 +846,34 @@ typechecking
 ::::
 :::
 
-# References
+# IR generation is a traversal
 
-## Sources \centering
-
-::: columns
-:::: {.column width=31%}
-
-\vspace{1em}
-
-\qrcode[height=2.8cm]{https://github.com/llvm/llvm-project/blob/main/clang/include/clang/AST/Expr.h}
-
-\vspace{0.3em}
-
-[clang/AST/Expr.h]{.small}
-
-::::
-:::: {.column width=31%}
-
-\vspace{1em}
-
-\qrcode[height=2.8cm]{https://github.com/rust-lang/rust/blob/master/compiler/rustc_ast/src/ast.rs}
-
-\vspace{0.3em}
-
-[compiler/rustc\_ast/src/ast.rs]{.small}
-
-::::
-:::: {.column width=31%}
-
-\vspace{1em}
-
-\qrcode[height=2.8cm]{https://github.com/ghc/ghc/blob/master/compiler/GHC/Hs/Expr.hs}
-
-\vspace{0.3em}
-
-[compiler/GHC/Hs/Expr.hs]{.small}
-
-::::
-:::
-
-# Semantic checks and codegen are traversals
-
-## Every stage is a walk over the same tree \centering
-
-::: columns
-:::: {.column width=45%}
-
-- \cemph{Name resolution} --- find declarations,
-  reject undefined variables
-- \cemph{Type checking} --- compute and compare types
-  (a later grammar stage)
-- \cemph{Constant evaluation} --- fold `2 + 3 * 4`
-- \cemph{IR generation} --- lower the tree to LLVM IR
-
-\vspace{1.5em}
-
-Each of these is a traversal; the three families
-only differ in how the walk is written:
-
-- switch on tag
-- visitor / double dispatch
-- pattern match
-
-::::
-:::: {.column width=45%}
-
-```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
-\centering
-```
-
-```{=latex}
-\hspace{1em}
-\begin{tikzpicture}[
-    ->,>=latex,
-    every node/.style={font=\footnotesize,align=left},
-    base/.style={minimum width={4em},minimum height={2em},inner sep=0.8em,outer sep=auto},
-    n/.style={base,draw,solid},
-    block/.style={n,rectangle},
-    every matrix/.style={row sep=1.8em,column sep=1.2em,ampersand replacement=\&,every node/.style={block}},
-  ]
-
-  \matrix {
-  \& \node [block] (add) {$+$}; \& \\
-  \node [block] (a) {$a$}; \& \node [block] (b) {$b$}; \\
-  };
-  \graph [use existing nodes] {
-    add -> a; add -> b;
-  };
-\end{tikzpicture}
-```
-
-\vspace{0.8em}
-
-resolve $a$, $b$ --- a traversal
-
-fold $2+3$ --- a traversal
-
-emit code --- a traversal
-
-```{=latex}
-\end{minipage}
-```
-
-::::
-:::
-
-# IR generation for expressions
-
-## Same traversal, three styles \centering
-
-::: columns
-:::: {.column width=31%}
-
-\cemph{Switch}
-
-```c
-/* x = a + b */
-LLVMValueRef emit(const
-    struct expr *e) {
-    switch (e->kind) {
-    case EXPR_INT:
-        return LLVMConstInt(
-          i64, e->int_val, 0);
-    case EXPR_VAR:
-        return load_var(
-          e->var_name);
-    case EXPR_ADD:
-        return LLVMBuildAdd(b,
-          emit(e->l),
-          emit(e->r), "");
-    ...
-    }
-}
-```
-
-::::
-:::: {.column width=31%}
-
-\cemphp{Visitor}
-
-```java
-class EmitVisitor
-    implements Visitor<Value> {
-
-  Value visitInt(IntLit e) {
-    return i64(e.value);
-  }
-
-  Value visitVar(Var e) {
-    return load(e.name);
-  }
-
-  Value visitAdd(Add e) {
-    return builder.add(
-      e.l.accept(this),
-      e.r.accept(this));
-  }
-  ...
-}
-```
-
-::::
-:::: {.column width=31%}
-
-\cemph{Match}
-
-```ocaml
-let rec emit = function
-  | Int n -> const i64 n
-  | Var x -> load x
-  | Add (l, r) ->
-      build add (emit l)
-                (emit r)
-  | Mul (l, r) ->
-      build mul (emit l)
-                (emit r)
-```
-
-\vspace{1em}
-
-expressions $\to$ values
-
-statements $\to$ effects
-
-::::
-:::
-
-# What it emits
-
-## `x = a + b;` \centering
+## Expressions produce values, statements produce effects \centering
 
 ::: columns
 :::: {.column width=42%}
 
+- \cemph{Name resolution}, \cemph{type checking},
+  \cemph{constant folding} --- each a traversal
+- \cemph{IR generation} --- one more walk over
+  the same tree
+
+\vspace{1.5em}
+
 - Expressions produce \cemph{values}
-- Statements produce \cemph{effects}
-
-\vspace{1.5em}
-
-- `alloca` reserves a stack slot per variable
-- `load` reads the slot into a register value
-- `store` writes a value back to the slot
-- No registers are assigned by us --- LLVM
-  handles register allocation
-
-\vspace{1.5em}
-
-The `alloca`/load/store discipline is
-all we need; the optimizer turns it into
-SSA form
+- Statements produce \cemph{effects}:
+  `x = ...` emits a `store`
+- `alloca` reserves a stack slot per
+  variable; `load`/`store` move values
+- No registers are assigned by us ---
+  LLVM handles register allocation
 
 ::::
 :::: {.column width=50%}
+
+`x = a + b;`
+
+\vspace{0.5em}
 
 ```llvm
 %x = alloca i64
@@ -1003,6 +887,198 @@ SSA form
 
 ; x =
 store i64 %3, ptr %x
+```
+
+::::
+:::
+
+# IR generation via switch
+
+## The traversal appends IR text \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=50%}
+
+```c
+/* emit(e) appends IR lines to the
+   function body, returns the name
+   of the result temporary */
+const char *emit(struct expr *e) {
+  switch (e->kind) {
+  case EXPR_VAR:
+    return tmp("load i64, ptr %%%s",
+               e->var_name);
+  case EXPR_ADD: {
+    const char *l = emit(e->l);
+    const char *r = emit(e->r);
+    return tmp("add i64 %s, %s",
+               l, r);
+  }
+  }
+}
+```
+
+::::
+:::: {.column width=46%}
+
+- `tmp(...)` allocates the next
+  temporary `%n` and appends the line
+- The recursion order is the
+  \cemph{instruction order}:
+  operands first, `add` after
+- Exactly the IR from the earlier
+  slide
+- External dispatch again: one
+  function, switch on the tag
+
+::::
+:::
+
+# IR generation via visitor
+
+## The visitor object carries the output \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=50%}
+
+```java
+class EmitVisitor
+    implements Visitor<String> {
+  StringBuilder out; // IR text
+
+  String visitVar(Var e) {
+    return line(out,
+      "load i64, ptr %" + e.name());
+  }
+
+  String visitAdd(Add e) {
+    var l = e.l().accept(this);
+    var r = e.r().accept(this);
+    return line(out,
+      "add i64 " + l + ", " + r);
+  }
+}
+```
+
+::::
+:::: {.column width=46%}
+
+- Same traversal; the dispatch is
+  `accept()` instead of `switch`
+- The output buffer, symbol table,
+  builder --- all live in the visitor
+  object
+- `accept(this)` passes the visitor
+  down: children reuse the same
+  context
+
+::::
+:::
+
+# IR generation via match
+
+## Same walk, pattern-matching syntax \centering
+
+```{=latex}
+\lstset{style=small}
+```
+
+::: columns
+:::: {.column width=50%}
+
+```scala
+def emit(e: Expr): String =
+  e match
+    case Var(x) =>
+      line("load i64, ptr %" + x)
+    case Add(l, r) =>
+      val a = emit(l)
+      val b = emit(r)
+      line(s"add i64 $a, $b")
+    case Mul(l, r) =>
+      val a = emit(l)
+      val b = emit(r)
+      line(s"mul i64 $a, $b")
+```
+
+::::
+:::: {.column width=46%}
+
+- Exhaustiveness checked: a new
+  node kind breaks every emitter
+  until handled
+- Context (output buffer, scopes,
+  loop stack) is threaded through
+  parameters --- or wrapped in a
+  class, at which point it is a
+  visitor again
+
+\vspace{1em}
+
+- \cemphp{Good for frontend}: one walk,
+  one place per operation
+
+::::
+:::
+
+# LLVM: C API and text form
+
+## One instruction, two notations \centering
+
+::: columns
+:::: {.column width=50%}
+
+- Our pseudo-emit writes IR text
+  directly; the C API builds the same
+  instructions as objects
+
+```c
+/* C API */
+LLVMValueRef L = LLVMBuildLoad2(
+    Builder, I64, Slot, "");
+LLVMValueRef S = LLVMBuildAdd(
+    Builder, L, R, "tmp");
+```
+
+```llvm
+; the same instructions, text form
+%1 = load i64, ptr %a
+%tmp = add i64 %1, %2
+```
+
+- \cemph{Builder} = insertion point: where
+  new instructions are appended
+- `%n` = SSA temporaries, one per
+  instruction result
+- `alloca` / `load` / `store` / `br`
+  map one to one
+
+::::
+:::: {.column width=42%}
+
+```{=latex}
+\begin{minipage}[c][.55\textheight][c]{\linewidth}
+\centering
+```
+
+\vspace{1em}
+
+\qrcode[height=3.2cm]{https://llvm.org/docs/tutorial/}
+
+\vspace{0.5em}
+
+[LLVM Tutorial: My First Language Frontend]{.small}
+
+```{=latex}
+\end{minipage}
 ```
 
 ::::
@@ -1136,7 +1212,7 @@ body:
 
 # break and continue
 
-## The targets live in the emitter, not in the tree \centering
+## The targets live in the traversal, not in the tree \centering
 
 ::: columns
 :::: {.column width=45%}
@@ -1151,8 +1227,10 @@ body:
 \vspace{1.5em}
 
 - Same idea as symbol tables:
-  the emitter carries context that
+  the traversal carries context that
   the AST does not contain
+- Visitor: fields on the object.
+  Match: explicit parameters
 
 ::::
 :::: {.column width=45%}
