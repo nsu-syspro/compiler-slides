@@ -150,7 +150,7 @@ GC, immutable
 ::::
 :::
 
-# Representation of operations
+# Representation of passes
 
 ```{=latex}
 \lstset{style=small}
@@ -168,8 +168,6 @@ sealed trait Expr:
 case class Add(l, r) extends Expr
   def eval(env: Env): Long =
     l.eval(env) + r.eval(env)
-
-...
 ```
 
 ::::
@@ -338,11 +336,11 @@ case class Add(l: Expr, r: Expr) extends Expr:
 ## Trade-offs \centering
 
 - \cemph{Internal}: one new node kind is one new
-  class, but the operation is scattered
+  class, but the pass logic is scattered
   across all of them
-- \cemph{External}: one new operation is one new
-  function, but adding a node kind means
-  touching every operation
+- \cemph{External}: one new pass is one new
+  function/class, but adding a node kind means
+  touching every pass
 
 \vspace{1.5em}
 
@@ -355,10 +353,10 @@ node set. External traversal pays off
 
 ## 
 
-|          | Add operation | Add node |
-|:--------:|:-------------:|:--------:|
-| Internal | painful       | easy     |
-| External | easy          | painful  |
+|          | Add pass | Add node |
+|:--------:|:--------:|:--------:|
+| Internal | painful  | easy     |
+| External | easy     | painful  |
 
 ::::
 :::
@@ -402,7 +400,6 @@ def emit(e: Expr)(
   case Add(l, r) =>
     emit(l)(out, scopes, loops)
     emit(r)(out, scopes, loops)
-    ...
 ```
 
 ::::
@@ -772,7 +769,7 @@ const char *emit(struct expr *e) {
 def emit(e: Expr): String = e match
 
   case Var(x) =>
-    line("load i64, ptr %" + x)
+    line(s"load i64, ptr %$x")
 
   case Add(l, r) =>
     val a = emit(l)
@@ -803,7 +800,7 @@ class EmitVisitor(
 ) extends Visitor[String]:
 
   def visitVar(e: Var): String =
-    line(out, "load i64, ptr %" + e.name)
+    line(out, s"load i64, ptr %${e.name}")
 
   def visitAdd(e: Add): String = {
     val l = e.l.accept(this)
