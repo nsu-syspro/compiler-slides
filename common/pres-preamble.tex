@@ -22,7 +22,7 @@
     numberstyle  = \tiny\color{CtpOverlay1},
     numbersep    = 5pt,
     escapeinside = {\$\$},
-    columns      = flexible,
+    columns      = fixed,
     postbreak    = \usebox\grayarrow,
     showstringspaces = false,
     texcl        = true,
@@ -125,6 +125,11 @@
 
 %% Do not number tables
 %\captionsetup[table]{labelformat=empty}
+
+%% Pandoc wraps captionless beamer tables in {\def\LTcaptype{none} ...}
+%% and modern longtable steps \LTcaptype at table start, so define the
+%% "none" counter it references.
+\newcounter{none}
 
 %% Enable strikethrough syntax \st of newer pandoc
 \usepackage{soul}
