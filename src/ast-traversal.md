@@ -540,6 +540,8 @@ public:
 \centering
 ```
 
+\vspace{-1em}
+
 ```c
 /* tree.def: one line per code */
 DEFTREECODE (INTEGER_CST,
@@ -549,7 +551,8 @@ DEFTREECODE (PLUS_EXPR,
 
 /* tree-core.h */
 enum tree_code : unsigned {
-#include "all-tree.def" MAX_TREE_CODES
+#include "all-tree.def"
+  MAX_TREE_CODES
 };
 
 /* the node itself */
@@ -621,7 +624,7 @@ or the typed tree
 ::: columns
 :::: {.column width=48%}
 
-## AST travelsals
+## AST traversals
 
 - \cemphp{Name resolution}
 - \cemphp{type checking},
