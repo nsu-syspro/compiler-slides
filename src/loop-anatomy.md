@@ -44,7 +44,6 @@ subtitle: Compiler implementation
 - Latch: loop node with an edge to the header
 - Backedge: the edge from latch to header
 - Exiting block has an edge out, its target is an exit block
-- Nested loops: a loop's node set can be a subset of another loop with a different header
 - Preheader: entering block whose only edge is to the header
 - Preheader dominates the loop without belonging to it
 
