@@ -116,7 +116,7 @@ subtitle: Compiler implementation
 \vspace{1em}
 \small
 ```
-<https://www.npopov.com/2023/10/03/LLVM-Scalar-evolution.html>
+`\phantom{y}`{=latex}<https://www.npopov.com/2023/10/03/LLVM-Scalar-evolution.html>
 ```{=latex}
 \end{minipage}
 ```
