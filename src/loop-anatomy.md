@@ -44,7 +44,7 @@ subtitle: Compiler implementation
 - Latch: loop node with an edge to the header
 - Backedge: the edge from latch to header
 - Exiting block has an edge out, its target is an exit block
-- Loops sharing a header nest into each other
+- Nested loops: a loop's node set can be a subset of another loop with a different header
 - Preheader: entering block whose only edge is to the header
 - Preheader dominates the loop without belonging to it
 
@@ -98,7 +98,7 @@ subtitle: Compiler implementation
 - Loops are either disjoint or one is nested inside the other
 - The loop hierarchy forms a forest
 - Two logical loops sharing a header are a single loop in LLVM
-- The inner loop is lost for loop optimizations
+- No `Loop` object exists for the inner loop, so loop passes cannot transform it
 - `LoopSimplify` ensures separate headers for outer and inner loop
 
 ::::
@@ -110,11 +110,18 @@ subtitle: Compiler implementation
 \begin{onlyenv}<1>
 ```
 
-![](images/loop-anatomy/loop-merge.pdf)
+![](images/loop-anatomy/loop-nonmaximal.pdf)
 
 ```{=latex}
 \end{onlyenv}
 \begin{onlyenv}<2>
+```
+
+![](images/loop-anatomy/loop-merge.pdf)
+
+```{=latex}
+\end{onlyenv}
+\begin{onlyenv}<3>
 ```
 
 ![](images/loop-anatomy/loop-separate.pdf)
@@ -139,7 +146,7 @@ subtitle: Compiler implementation
   sequences, acyclic branches and self-loops
 - Irreducible flow can appear at any nesting level
 - `fix-irreducible` inserts new headers, not in default pipelines
-- C sources: two loops entering each other, Duff's device
+- C sources: two loops entering each other, [Duff's device](https://en.wikipedia.org/wiki/Duff%27s_device)
 
 ::::
 :::: {.column width=50%}
