@@ -303,7 +303,7 @@ X4 = phi(X3)
 # Rotated loops
 
 ::: columns
-:::: {.column width=50%}
+:::: {.column width=38%}
 
 ## Rotation \centering
 
@@ -318,18 +318,17 @@ X4 = phi(X3)
 - Restores Loop Simplify Form afterwards: preheader, dedicated exits
 
 ::::
-:::: {.column width=50%}
+:::: {.column width=60%}
 
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
-\scriptsize
 \begin{columns}[T]
-\begin{column}{0.48\linewidth}
+\begin{column}{0.54\linewidth}
 \centering
 before
 \end{column}
-\begin{column}{0.48\linewidth}
+\begin{column}{0.44\linewidth}
 \centering
 after
 \end{column}
@@ -338,9 +337,12 @@ after
 ```
 
 ::: columns
-:::: {.column width=48%}
+:::: {.column width=54%}
 
 ```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+\small
 \begin{onlyenv}<1-2>
 ```
 
@@ -364,12 +366,16 @@ for (i = 0; i < n; ++i) {
 
 ```{=latex}
 \end{onlyenv}
+\end{minipage}
 ```
 
 ::::
-:::: {.column width=48%}
+:::: {.column width=44%}
 
 ```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+\small
 \begin{onlyenv}<1>
 ```
 
@@ -414,6 +420,7 @@ if (n > 0) {
 
 ```{=latex}
 \end{onlyenv}
+\end{minipage}
 ```
 
 ::::
