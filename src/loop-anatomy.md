@@ -337,7 +337,7 @@ after
 ```
 
 ::: columns
-:::: {.column width=54%}
+:::: {.column width=50%}
 
 ```{=latex}
 \begin{minipage}[t][.6\textheight][t]{\linewidth}
@@ -374,7 +374,7 @@ while (i < n) {
 ```
 
 ::::
-:::: {.column width=44%}
+:::: {.column width=48%}
 
 ```{=latex}
 \begin{minipage}[t][.6\textheight][t]{\linewidth}
