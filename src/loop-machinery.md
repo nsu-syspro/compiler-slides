@@ -6,7 +6,7 @@ subtitle: Compiler implementation
 # What is a loop?
 
 ::: columns
-:::: {.column width=55%}
+:::: {.column width=50%}
 
 ## Definition \centering
 
@@ -17,31 +17,17 @@ subtitle: Compiler implementation
 - A cycle without such a header is irreducible control flow, not a loop
 
 ::::
-:::: {.column width=41%}
-
-## A realistic CFG \centering
-
-\centering
+:::: {.column width=50%}
 
 ```{=latex}
-\begin{tikzpicture}
-  [->,>=latex,
-   every node/.style={font=\footnotesize,align=center},
-   base/.style={draw,rounded corners,minimum width=4.5em,minimum height=1.6em},
-   every matrix/.style={row sep=1.6em,column sep=1.2em,ampersand replacement=\&,every node/.style={base}},
-   lab/.style={font=\scriptsize}]
-  \matrix {
-  \& \node (entry) {entry}; \& \& \\
-  \& \node (header) {\texttt{i < n ?}}; \& \& \node (exit) {exit}; \\
-  \& \node (body) {\texttt{if (cond)}\\ body}; \& \\ \\
-  \& \node (latch) {\texttt{++i}}; \& \& \\
-  };
-  \draw [->] (entry) -- (header);
-  \draw [->] (header) -- node[left,lab] {true} (body);
-  \draw [->] (body) -- (latch);
-  \draw [->] (latch) edge[bend left] node[right,lab] {next} (header);
-  \draw [->] (header) -- node[above,lab] {false} (exit);
-\end{tikzpicture}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+```
+
+![](images/loop-machinery/loop-terminology.pdf)
+
+```{=latex}
+\end{minipage}
 ```
 
 ::::
@@ -50,7 +36,7 @@ subtitle: Compiler implementation
 # Loop vocabulary
 
 ::: columns
-:::: {.column width=55%}
+:::: {.column width=50%}
 
 ## Terms \centering
 
@@ -63,13 +49,18 @@ subtitle: Compiler implementation
 - Loops sharing a header nest into each other
 
 ::::
-:::: {.column width=41%}
+:::: {.column width=50%}
 
-## Anatomy \centering
-
+```{=latex}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
+```
 
 ![](images/loop-machinery/loop-terminology.pdf)
+
+```{=latex}
+\end{minipage}
+```
 
 ::::
 :::
