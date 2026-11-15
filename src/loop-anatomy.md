@@ -41,12 +41,12 @@ subtitle: Compiler implementation
 ## Anatomy \centering
 
 - Entering block (loop predecessor) has an edge into the loop
-- Preheader: entering block whose only edge is to the header
-- Preheader dominates the loop without belonging to it
 - Latch: loop node with an edge to the header
 - Backedge: the edge from latch to header
 - Exiting block has an edge out, its target is an exit block
 - Loops sharing a header nest into each other
+- Preheader: entering block whose only edge is to the header
+- Preheader dominates the loop without belonging to it
 
 ::::
 :::: {.column width=50%}
@@ -54,11 +54,10 @@ subtitle: Compiler implementation
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
-```
-
-![](images/loop-anatomy/loop-terminology.pdf)
-
-```{=latex}
+\only<1>{\includegraphics[width=.9\linewidth,height=.7\textheight,keepaspectratio]{images/loop-anatomy/loop-terminology.pdf}}%
+\only<2>{\includegraphics[width=.9\linewidth,height=.7\textheight,keepaspectratio]{images/loop-anatomy/loop-single.pdf}}%
+\only<3>{\includegraphics[width=.9\linewidth,height=.7\textheight,keepaspectratio]{images/loop-anatomy/loop-nested.pdf}}%
+\only<4>{\includegraphics[width=.9\linewidth,height=.7\textheight,keepaspectratio]{images/loop-anatomy/loop-nonmaximal.pdf}}
 \end{minipage}
 ```
 
