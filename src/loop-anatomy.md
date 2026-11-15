@@ -1,9 +1,9 @@
 ---
-title: Loop transformations
+title: Loop anatomy
 subtitle: Compiler implementation
 ---
 
-# What is a loop?
+# Terminology
 
 ::: columns
 :::: {.column width=50%}
@@ -24,7 +24,7 @@ subtitle: Compiler implementation
 \centering
 ```
 
-![](images/loop-machinery/loop-terminology.pdf)
+![](images/loop-anatomy/loop-terminology.pdf)
 
 ```{=latex}
 \end{minipage}
@@ -33,12 +33,12 @@ subtitle: Compiler implementation
 ::::
 :::
 
-# Loop vocabulary
+# Terminology
 
 ::: columns
 :::: {.column width=50%}
 
-## Terms \centering
+## Anatomy \centering
 
 - Entering block (loop predecessor) has an edge into the loop
 - Preheader: entering block whose only edge is to the header
@@ -56,7 +56,7 @@ subtitle: Compiler implementation
 \centering
 ```
 
-![](images/loop-machinery/loop-terminology.pdf)
+![](images/loop-anatomy/loop-terminology.pdf)
 
 ```{=latex}
 \end{minipage}
