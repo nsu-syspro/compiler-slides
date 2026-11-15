@@ -99,7 +99,10 @@ subtitle: Compiler implementation
 \qrcode[height=3.5cm]{https://llvm.org/docs/LoopTerminology.html}
 \vspace{1em}
 \small
-\url{https://llvm.org/docs/LoopTerminology.html}\\
+```
+<https://llvm.org/docs/LoopTerminology.html>  
+\ 
+```{=latex}
 \end{minipage}
 ```
 
