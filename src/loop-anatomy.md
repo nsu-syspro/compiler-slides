@@ -198,27 +198,26 @@ subtitle: Compiler implementation
 \centering
 ```
 
-```llvm
-pre:
-  br label %header
-
-header:   ; pre, latch
-  %i = phi i32 [ 0, %pre ],
-               [ %inc, %latch ]
-  %cmp = icmp slt i32 %i, %n
-  br i1 %cmp, label %body,
-              label %exit
-
-body:
-  ...
-  br label %latch
-
-latch:
-  %inc = add nsw i32 %i, 1
-  br label %header
-
-exit:
-  ret void
+```{=latex}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={2em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+    region/.style={draw=CtpRed,rounded corners,dashed,inner sep=0.5em},
+  ]
+  \node[n] (pre)    at ( 0.0, 3.3) {pre};
+  \node[n] (header) at ( 0.0, 2.0) {header};
+  \node[n] (body)   at (-1.4, 0.9) {body};
+  \node[n] (latch)  at (-1.4,-0.2) {latch};
+  \node[n] (exit)   at ( 1.5, 0.9) {exit};
+  \node[region,fit=(header)(body)(latch),label={below:\footnotesize loop}] {};
+  \draw (pre) -- (header);
+  \draw (header) -- (body);
+  \draw (body) -- (latch);
+  \draw (latch.west) .. controls (-2.7,-0.2) and (-2.7,2.0) .. (header.west);
+  \draw (header) -- (exit);
+\end{tikzpicture}
 ```
 
 ```{=latex}
@@ -252,9 +251,24 @@ exit:
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
+\vspace{0.5em}
+\begin{columns}[T]
+\begin{column}{0.48\linewidth}
+\centering
+before
+\end{column}
+\begin{column}{0.48\linewidth}
+\centering
+after
+\end{column}
+\end{columns}
+\vspace{0.5em}
 ```
 
-```
+::: columns
+:::: {.column width=48%}
+
+```c
 for (...) {
   if (c) X1 = ...
   else   X2 = ...
@@ -263,11 +277,10 @@ for (...) {
 ... = X3 + 4
 ```
 
-```{=latex}
-\vspace{1em}
-```
+::::
+:::: {.column width=48%}
 
-```
+```c
 for (...) {
   if (c) X1 = ...
   else   X2 = ...
@@ -276,6 +289,9 @@ for (...) {
 X4 = phi(X3)
 ... = X4 + 4
 ```
+
+::::
+:::
 
 ```{=latex}
 \end{minipage}
