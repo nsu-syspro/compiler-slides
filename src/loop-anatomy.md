@@ -243,7 +243,6 @@ subtitle: Compiler implementation
 - Outside users are exactly the loop-closing PHIs
 - Transformations update only these PHIs (e.g. unswitching copies the loop)
 - Ensured by the `lcssa` pass, cleaned up later by `instcombine`
-- Every expression then lives in at most one loop: plain `getSCEV()` suffices
 
 ::::
 :::: {.column width=50%}
