@@ -318,12 +318,29 @@ X4 = phi(X3)
 - Restores Loop Simplify Form afterwards: preheader, dedicated exits
 
 ::::
-:::: {.column width=50%}
-
-before
+:::: {.column width=60%}
 
 ```{=latex}
-\begin{minipage}[t][.3\textheight][t]{\linewidth}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+\begin{columns}[T]
+\begin{column}{0.54\linewidth}
+\centering
+before
+\end{column}
+\begin{column}{0.44\linewidth}
+\centering
+after
+\end{column}
+\end{columns}
+\vspace{0.5em}
+```
+
+::: columns
+:::: {.column width=54%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
 \centering
 \small
 \begin{onlyenv}<1-2>
@@ -352,10 +369,11 @@ for (i = 0; i < n; ++i) {
 \end{minipage}
 ```
 
-after
+::::
+:::: {.column width=44%}
 
 ```{=latex}
-\begin{minipage}[t][.5\textheight][t]{\linewidth}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
 \centering
 \small
 \begin{onlyenv}<1>
@@ -408,13 +426,20 @@ if (n > 0) {
 ::::
 :::
 
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # References
 
 ::: columns
 :::: {.column width=50%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
 \centering
 \qrcode[height=3.5cm]{https://llvm.org/docs/LoopTerminology.html}
 \vspace{1em}
@@ -430,7 +455,7 @@ if (n > 0) {
 :::: {.column width=50%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
 \centering
 \qrcode[height=3.5cm]{https://www.npopov.com/2023/10/03/LLVM-Scalar-evolution.html}
 \vspace{1em}
