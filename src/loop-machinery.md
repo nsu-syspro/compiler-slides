@@ -8,6 +8,8 @@ subtitle: Compiler implementation
 ::: columns
 :::: {.column width=55%}
 
+## Definition \centering
+
 - A loop is a subset of CFG nodes with two properties
 - Induced subgraph is strongly connected: every node reachable from every other
 - All edges from outside the subset point to the same node, the header
@@ -17,17 +19,40 @@ subtitle: Compiler implementation
 ::::
 :::: {.column width=41%}
 
-![](images/loop-machinery/loop-single.pdf)
+## A realistic CFG \centering
+
+\centering
+
+```{=latex}
+\begin{tikzpicture}
+  [->,>=latex,
+   every node/.style={font=\footnotesize,align=center},
+   base/.style={draw,rounded corners,minimum width=4.5em,minimum height=1.6em},
+   every matrix/.style={row sep=1.6em,column sep=1.2em,ampersand replacement=\&,every node/.style={base}},
+   lab/.style={font=\scriptsize}]
+  \matrix {
+  \& \node (entry) {entry}; \& \& \\
+  \& \node (header) {\texttt{i < n ?}}; \& \& \node (exit) {exit}; \\
+  \& \node (body) {\texttt{if (cond)}\\ body}; \& \\ \\
+  \& \node (latch) {\texttt{++i}}; \& \& \\
+  };
+  \draw [->] (entry) -- (header);
+  \draw [->] (header) -- node[left,lab] {true} (body);
+  \draw [->] (body) -- (latch);
+  \draw [->] (latch) edge[bend left] node[right,lab] {next} (header);
+  \draw [->] (header) -- node[above,lab] {false} (exit);
+\end{tikzpicture}
+```
 
 ::::
 :::
-
-*Detection: `LoopInfo`, built on dominator trees over the CFG*
 
 # Loop vocabulary
 
 ::: columns
 :::: {.column width=55%}
+
+## Terms \centering
 
 - Entering block (loop predecessor) has an edge into the loop
 - Preheader: entering block whose only edge is to the header
@@ -39,6 +64,10 @@ subtitle: Compiler implementation
 
 ::::
 :::: {.column width=41%}
+
+## Anatomy \centering
+
+\centering
 
 ![](images/loop-machinery/loop-terminology.pdf)
 
