@@ -249,9 +249,8 @@ subtitle: Compiler implementation
 :::: {.column width=48%}
 
 ```{=latex}
-\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
 \centering
-\vspace{0.5em}
 \begin{columns}[T]
 \begin{column}{0.48\linewidth}
 \centering
@@ -268,6 +267,12 @@ after
 ::: columns
 :::: {.column width=48%}
 
+```{=latex}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
+\centering
+\small
+```
+
 ```c
 for (...) {
   if (c) X1 = ...
@@ -277,8 +282,18 @@ for (...) {
 ... = X3 + 4
 ```
 
+```{=latex}
+\end{minipage}
+```
+
 ::::
 :::: {.column width=48%}
+
+```{=latex}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
+\centering
+\small
+```
 
 ```c
 for (...) {
@@ -288,6 +303,10 @@ for (...) {
 }
 X4 = phi(X3)
 ... = X4 + 4
+```
+
+```{=latex}
+\end{minipage}
 ```
 
 ::::
