@@ -249,7 +249,7 @@ subtitle: Compiler implementation
 :::: {.column width=48%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
 \centering
 \begin{columns}[T]
 \begin{column}{0.48\linewidth}
@@ -340,7 +340,7 @@ X4 = phi(X3)
 :::: {.column width=48%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
 \centering
 \begin{columns}[T]
 \begin{column}{0.54\linewidth}
