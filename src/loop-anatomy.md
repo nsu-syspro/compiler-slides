@@ -442,6 +442,99 @@ if (n > 0) {
 ::::
 :::
 
+# Scalar evolution
+
+::: columns
+:::: {.column width=48%}
+
+## SCEV \centering
+
+```{=latex}
+\lstset{style=highlight}
+```
+
+- Analysis of how scalar expressions evolve across iterations
+- Demand-driven: scheduled when a pass requires it
+- Unit: addrec, a start value plus a step per iteration
+- Start and step are literals or nested SCEVs, possibly symbolic
+- One expression has one addrec per loop
+- What it cannot categorize stays unknown
+
+::::
+:::: {.column width=48%}
+
+```{=latex}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+\small
+```
+
+```text
+i   -->  {0,+,1}<nuw><nsw><%loop>
+2*i -->  {0,+,2}<nuw><%loop>
+p   -->  {%p,+,4}<nw><%loop>
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# SCEV at work
+
+::: columns
+:::: {.column width=48%}
+
+## Consumers \centering
+
+```{=latex}
+\lstset{style=highlight}
+```
+
+- Scheduled when a loop pass requires SCEV
+- `indvars` rewrites exit tests with final values
+- `loop-idiom` and `loop-deletion` need exact trip counts
+- Also feeds unrolling, unswitching, vectorization
+- Computed once per function, cached for all consumers
+
+::::
+:::: {.column width=48%}
+
+```{=latex}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=left},
+    base/.style={minimum width={2em},minimum height={2em},inner sep=0.8em,outer sep=auto},
+    n/.style={base,draw,solid},
+  ]
+  \node[n] (ls)    at (0,0)      {loop-simplify};
+  \node[n] (lcssa) at (0,-1.15)  {lcssa};
+  \node[n] (scev)  at (0,-2.3)   {scalar-evolution};
+  \node[n] (iv)    at (3.1,-1.45) {indvars};
+  \node[n] (li)    at (3.1,-2.3)  {loop-idiom};
+  \node[n] (ld)    at (3.1,-3.15) {loop-deletion};
+  \draw (ls) -- (lcssa);
+  \draw (lcssa) -- (scev);
+  \draw (scev) -- (iv);
+  \draw (scev) -- (li);
+  \draw (scev) -- (ld);
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # References
 
 ::: columns
