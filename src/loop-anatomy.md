@@ -323,9 +323,101 @@ X4 = phi(X3)
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
+\scriptsize
+\begin{columns}[T]
+\begin{column}{0.48\linewidth}
+\centering
+before
+\end{column}
+\begin{column}{0.48\linewidth}
+\centering
+after
+\end{column}
+\end{columns}
+\vspace{0.5em}
 ```
 
-![](images/loop-anatomy/loop-guard.pdf)
+::: columns
+:::: {.column width=48%}
+
+```{=latex}
+\begin{onlyenv}<1-2>
+```
+
+```c
+for (i = 0; i < n; ++i) {
+  body;
+}
+```
+
+```{=latex}
+\end{onlyenv}
+\begin{onlyenv}<3>
+```
+
+```c
+for (i = 0; i < n; ++i) {
+  v = *p;
+  use(v);
+}
+```
+
+```{=latex}
+\end{onlyenv}
+```
+
+::::
+:::: {.column width=48%}
+
+```{=latex}
+\begin{onlyenv}<1>
+```
+
+```c
+i = 0;
+do {
+  body;
+  ++i;
+} while (i < n);
+```
+
+```{=latex}
+\end{onlyenv}
+\begin{onlyenv}<2>
+```
+
+```c
+i = 0;
+if (n > 0) {
+  do {
+    body;
+    ++i;
+  } while (i < n);
+}
+```
+
+```{=latex}
+\end{onlyenv}
+\begin{onlyenv}<3>
+```
+
+```c
+if (n > 0) {
+  v = *p;
+  i = 0;
+  do {
+    use(v);
+    ++i;
+  } while (i < n);
+}
+```
+
+```{=latex}
+\end{onlyenv}
+```
+
+::::
+:::
 
 ```{=latex}
 \end{minipage}
