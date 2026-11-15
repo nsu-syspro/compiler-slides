@@ -300,6 +300,40 @@ X4 = phi(X3)
 ::::
 :::
 
+# Rotated loops
+
+::: columns
+:::: {.column width=50%}
+
+## Rotation \centering
+
+```{=latex}
+\lstset{style=highlight}
+```
+
+- `loop-rotate` converts loops into do-while style
+- Valid only if the body provably executes at least once
+- Otherwise a runtime guard is inserted
+- Enables hoisting invariants (e.g. loads) into the preheader
+- Restores Loop Simplify Form afterwards: preheader, dedicated exits
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+```
+
+![](images/loop-anatomy/loop-guard.pdf)
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # References
 
 ::: columns
