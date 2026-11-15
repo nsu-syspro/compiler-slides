@@ -230,7 +230,7 @@ subtitle: Compiler implementation
 # Loop Closed SSA
 
 ::: columns
-:::: {.column width=50%}
+:::: {.column width=48%}
 
 ## LCSSA \centering
 
@@ -243,9 +243,10 @@ subtitle: Compiler implementation
 - Outside users are exactly the loop-closing PHIs
 - Transformations update only these PHIs (e.g. unswitching copies the loop)
 - Ensured by the `lcssa` pass, cleaned up later by `instcombine`
+- Every expression then lives in at most one loop
 
 ::::
-:::: {.column width=50%}
+:::: {.column width=48%}
 
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
@@ -334,3 +335,10 @@ X4 = phi(X3)
 
 ::::
 :::
+
+# {.plain}
+
+\centering
+```{=latex}
+{\fontsize{48pt}{7.2}\selectfont Q\&A }
+```
