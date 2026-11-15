@@ -90,5 +90,35 @@ subtitle: Compiler implementation
 
 # References
 
-- [LLVM Loop Terminology (and Canonical Forms)](https://llvm.org/docs/LoopTerminology.html)
-- [Nikita Popov: LLVM Scalar Evolution](https://www.npopov.com/2023/10/03/LLVM-Scalar-evolution.html)
+::: columns
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+\qrcode[height=3.5cm]{https://llvm.org/docs/LoopTerminology.html}
+\vspace{1em}
+\small
+```
+<https://llvm.org/docs/LoopTerminology.html>
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+\qrcode[height=3.5cm]{https://www.npopov.com/2023/10/03/LLVM-Scalar-evolution.html}
+\vspace{1em}
+\small
+```
+<https://www.npopov.com/2023/10/03/LLVM-Scalar-evolution.html>
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
