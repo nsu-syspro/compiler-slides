@@ -340,15 +340,17 @@ after
 :::: {.column width=54%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
 \centering
 \small
 \begin{onlyenv}<1-2>
 ```
 
 ```c
-for (i = 0; i < n; ++i) {
+i = 0;
+while (i < n) {
   body;
+  ++i;
 }
 ```
 
@@ -358,9 +360,11 @@ for (i = 0; i < n; ++i) {
 ```
 
 ```c
-for (i = 0; i < n; ++i) {
+i = 0;
+while (i < n) {
   v = *p;
   use(v);
+  ++i;
 }
 ```
 
@@ -373,7 +377,7 @@ for (i = 0; i < n; ++i) {
 :::: {.column width=44%}
 
 ```{=latex}
-\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\begin{minipage}[t][.6\textheight][t]{\linewidth}
 \centering
 \small
 \begin{onlyenv}<1>
