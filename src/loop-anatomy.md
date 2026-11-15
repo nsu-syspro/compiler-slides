@@ -101,7 +101,7 @@ subtitle: Compiler implementation
 - Loops are either disjoint or one is nested inside the other
 - The loop hierarchy forms a forest
 - Two logical loops sharing a header are a single loop in LLVM
-- `LoopSimplify` ensures separate headers for outer and inner loop
+- `loop-simplify` ensures separate headers for outer and inner loop
 
 ::::
 :::: {.column width=50%}
@@ -187,7 +187,7 @@ subtitle: Compiler implementation
 - A single backedge, hence a single latch
 - Dedicated exits: no exit block has a predecessor outside the loop
 - Then all exit blocks are dominated by the header
-- Ensured by `LoopSimplify` (`-loop-simplify`)
+- Ensured by the `loop-simplify` pass
 - Added automatically by the pass manager before a `LoopPass`
 
 ::::
@@ -242,7 +242,7 @@ subtitle: Compiler implementation
 - Loop-closing PHI: single-entry PHI at each exit block
 - Outside users are exactly the loop-closing PHIs
 - Transformations update only these PHIs (e.g. unswitching copies the loop)
-- Ensured by `LCSSA` (`-lcssa`), cleaned up later by `-instcombine`
+- Ensured by the `lcssa` pass, cleaned up later by `instcombine`
 - Every expression then lives in at most one loop: plain `getSCEV()` suffices
 
 ::::
