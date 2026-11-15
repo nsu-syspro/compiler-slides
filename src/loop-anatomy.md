@@ -97,7 +97,6 @@ subtitle: Compiler implementation
 - Loops are either disjoint or one is nested inside the other
 - The loop hierarchy forms a forest
 - Two logical loops sharing a header are a single loop in LLVM
-- No `Loop` object exists for the inner loop, so loop passes cannot transform it
 - `LoopSimplify` ensures separate headers for outer and inner loop
 
 ::::
