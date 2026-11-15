@@ -303,7 +303,7 @@ X4 = phi(X3)
 # Rotated loops
 
 ::: columns
-:::: {.column width=38%}
+:::: {.column width=50%}
 
 ## Rotation \centering
 
@@ -318,7 +318,7 @@ X4 = phi(X3)
 - Restores Loop Simplify Form afterwards: preheader, dedicated exits
 
 ::::
-:::: {.column width=60%}
+:::: {.column width=50%}
 
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
