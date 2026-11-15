@@ -249,23 +249,14 @@ subtitle: Compiler implementation
 :::: {.column width=48%}
 
 ```{=latex}
-\begin{minipage}[t][.6\textheight][t]{\linewidth}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
-\begin{columns}[T]
-\begin{column}{0.48\linewidth}
-\centering
-before
-\end{column}
-\begin{column}{0.48\linewidth}
-\centering
-after
-\end{column}
-\end{columns}
-\vspace{0.5em}
 ```
 
 ::: columns
 :::: {.column width=48%}
+
+## before \centering
 
 ```{=latex}
 \begin{minipage}[t][.6\textheight][t]{\linewidth}
@@ -288,6 +279,8 @@ for (...) {
 
 ::::
 :::: {.column width=48%}
+
+## after \centering
 
 ```{=latex}
 \begin{minipage}[t][.6\textheight][t]{\linewidth}
@@ -340,23 +333,14 @@ X4 = phi(X3)
 :::: {.column width=48%}
 
 ```{=latex}
-\begin{minipage}[t][.6\textheight][t]{\linewidth}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
-\begin{columns}[T]
-\begin{column}{0.54\linewidth}
-\centering
-before
-\end{column}
-\begin{column}{0.44\linewidth}
-\centering
-after
-\end{column}
-\end{columns}
-\vspace{0.5em}
 ```
 
 ::: columns
 :::: {.column width=48%}
+
+## before \centering
 
 ```{=latex}
 \begin{minipage}[t][.6\textheight][t]{\linewidth}
@@ -394,6 +378,8 @@ while (i < n) {
 
 ::::
 :::: {.column width=48%}
+
+## after \centering
 
 ```{=latex}
 \begin{minipage}[t][.6\textheight][t]{\linewidth}
