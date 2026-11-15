@@ -439,7 +439,7 @@ if (n > 0) {
 :::: {.column width=50%}
 
 ```{=latex}
-\begin{minipage}[t][.6\textheight][t]{\linewidth}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
 \centering
 \qrcode[height=3.5cm]{https://llvm.org/docs/LoopTerminology.html}
 \vspace{1em}
@@ -455,7 +455,7 @@ if (n > 0) {
 :::: {.column width=50%}
 
 ```{=latex}
-\begin{minipage}[t][.6\textheight][t]{\linewidth}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
 \centering
 \qrcode[height=3.5cm]{https://www.npopov.com/2023/10/03/LLVM-Scalar-evolution.html}
 \vspace{1em}
