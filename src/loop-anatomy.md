@@ -458,6 +458,8 @@ if (n > 0) {
 - Unit: addrec, a start value plus a step per iteration
 - Start and step are literals or nested SCEVs, possibly symbolic
 - One expression has one addrec per loop
+- Subtraction is a negative-step addrec
+- Commutative operands get sorted, sums fold flat
 - What it cannot categorize stays unknown
 
 ::::
@@ -470,9 +472,64 @@ if (n > 0) {
 ```
 
 ```text
-i   -->  {0,+,1}<nuw><nsw><%loop>
-2*i -->  {0,+,2}<nuw><%loop>
-p   -->  {%p,+,4}<nw><%loop>
+i       -->  {0,+,1}<nuw><nsw><%loop>
+2*i     -->  {0,+,2}<nuw><%loop>
+n - i   -->  {%n,+,-1}<nw><%loop>
+p       -->  {%p,+,4}<nw><%loop>
+b + a   -->  (%a + %b)
+(a+b)+c -->  (%a + %b + %c)
+i+(b+1) -->  {(1 + %b),+,1}<%loop>
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# Trip count
+
+::: columns
+:::: {.column width=42%}
+
+## Counts \centering
+
+```{=latex}
+\lstset{style=highlight}
+```
+
+- Exit count: per exiting block, executions before the exit
+- Backedge-taken count: exit count of the latch
+- Trip count: backedge-taken count + 1, header executions
+- Guards like smax keep counts valid even for n < 0
+- Rotation moves the check to the latch, counts shift by one
+- `loop-deletion` needs zero, `indvars` exit tests, vectorizer exact counts
+
+::::
+:::: {.column width=58%}
+
+```{=latex}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+\small
+```
+
+```c
+void f(int *a, int n) {
+  for (int i = 0; i < n; ++i)    // BE n
+    a[i] = i;
+  for (int i = 1; i < n; ++i)    // BE n-1
+    a[i] = i;
+  for (int i = 0; i < n; i += 2) // BE (n+1)/2
+    a[i] = i;
+  for (int i = 0; i <= n; ++i)   // BE n+1
+    a[i] = i;
+}
+```
+
+```text
+Loop %1: backedge-taken count is (0 smax %n)
 ```
 
 ```{=latex}
