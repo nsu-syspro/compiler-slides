@@ -458,9 +458,8 @@ if (n > 0) {
 - Unit: addrec, a start value plus a step per iteration
 - Start and step are literals or nested SCEVs, possibly symbolic
 - One expression has one addrec per loop
-- Subtraction is a negated sum, negative step in loops
+- Subtraction is a negated sum
 - Commutative operands get sorted, sums fold flat
-- What it cannot categorize stays unknown
 
 ::::
 :::: {.column width=48%}
