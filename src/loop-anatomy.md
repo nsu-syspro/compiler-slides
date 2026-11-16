@@ -458,7 +458,7 @@ if (n > 0) {
 - Unit: addrec, a start value plus a step per iteration
 - Start and step are literals or nested SCEVs, possibly symbolic
 - One expression has one addrec per loop
-- Subtraction is a negative-step addrec
+- Subtraction is a negated sum, negative step in loops
 - Commutative operands get sorted, sums fold flat
 - What it cannot categorize stays unknown
 
@@ -476,8 +476,9 @@ i       -->  {0,+,1}<nuw><nsw><%loop>
 2*i     -->  {0,+,2}<nuw><%loop>
 n - i   -->  {%n,+,-1}<nw><%loop>
 p       -->  {%p,+,4}<nw><%loop>
-b + a   -->  (%a + %b)
+a + b   -->  (%a + %b)
 (a+b)+c -->  (%a + %b + %c)
+a - b   -->  ((-1 * %b) + %a)
 i+(b+1) -->  {(1 + %b),+,1}<%loop>
 ```
 
