@@ -491,7 +491,7 @@ i+(b+1) -->  {(1 + %b),+,1}<%loop>
 # Trip count
 
 ::: columns
-:::: {.column width=42%}
+:::: {.column width=48%}
 
 ## Counts \centering
 
@@ -507,12 +507,12 @@ i+(b+1) -->  {(1 + %b),+,1}<%loop>
 - `loop-deletion` needs zero, `indvars` exit tests, vectorizer exact counts
 
 ::::
-:::: {.column width=58%}
+:::: {.column width=48%}
 
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
 \centering
-\small
+\footnotesize
 ```
 
 ```c
