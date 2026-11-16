@@ -4,6 +4,7 @@ Rendered presentations are located in directory [publish](publish):
 
 - Course introduction ([pdf](publish/intro.pdf?raw=true), [md](src/intro.md))
 - AST traversal ([pdf](publish/ast-traversal.pdf?raw=true), [md](src/ast-traversal.md))
+- Loop anatomy ([pdf](publish/loop-anatomy.pdf?raw=true), [md](src/loop-anatomy.md))
 
 ## Building
 
