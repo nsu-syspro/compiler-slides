@@ -3,7 +3,7 @@ title: Type systems
 subtitle: Compiler implementation
 ---
 
-# What is a type
+# What is a type {.fragile}
 
 ::: columns
 :::: {.column width=50%}
@@ -21,17 +21,53 @@ subtitle: Compiler implementation
 
 ```{=latex}
 \begin{minipage}[c][.8\textheight][c]{\linewidth}
-\centering
 \small
 ```
 
-```c
-int64_t a = f();
-int64_t b = a * 2;   // arithmetic ops
-bool c = b == 0;     // comparison ops
-bool d = c || !b;
-d + 1;               // ill-typed
-```
+::::: block
+
+## Int64 \centering
+
+- values: integers in [-2^63, 2^63)
+- operations: `+` `-` `*` `/` `==` `<`
+
+:::::
+
+::::: block
+
+## Bool \centering
+
+- values: {false, true}
+- operations: `&&` `||` `!`
+
+:::::
+
+::::: block
+
+## double (C, Java) \centering
+
+- values: IEEE 754 floating-point numbers
+- operations: `+` `-` `*` `/` `==`
+
+:::::
+
+::::: block
+
+## String (Java) \centering
+
+- values: sequences of characters
+- operations: `+` concatenation, `length`, `charAt`
+
+:::::
+
+::::: block
+
+## List[Int] (Scala) \centering
+
+- values: sequences of integers
+- operations: `::` prepend, `map`, `length`
+
+:::::
 
 ```{=latex}
 \end{minipage}
