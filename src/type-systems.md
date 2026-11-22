@@ -29,7 +29,7 @@ A type system assigns types to expressions and variables
 
 ## Type checking \centering
 
-Type checking verifies every operation against the types of its operands
+Type checking is semantic analysis that verifies every operation against the types of its operands
 
 ::::
 :::: {.column width=45%}
