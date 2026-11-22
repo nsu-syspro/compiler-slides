@@ -227,6 +227,12 @@
   alt/.code args={<#1>#2#3}{\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}},
 }
 
+% overlay-aware selection for diagram nodes
+\tikzset{
+  selected on/.style={alt=#1{thick,draw=CtpTeal,text=CtpTeal}{}},
+  mismatch on/.style={alt=#1{thick,draw=CtpRed,text=CtpRed}{}},
+}
+
 \usetikzmarklibrary{listings}
 
 \tikzset{>=latex}

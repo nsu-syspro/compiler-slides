@@ -499,8 +499,8 @@ lists of integers
     t/.style={font=\ttfamily},
   ]
   \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
-    \& \node[c,alt=<3>{draw=CtpTeal,very thick,text=CtpTeal}{alt=<4>{draw=CtpRed,very thick,text=CtpRed}{}}] (op) {{+}}; \& \\
-    \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{}] (l) {{1}}; \& \& \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{}] (r) {{2.0}}; \\
+    \& \node[c,selected on=<3>,mismatch on=<4>] (op) {{+}}; \& \\
+    \node[c,selected on=<2>] (l) {{1}}; \& \& \node[c,selected on=<2>] (r) {{2.0}}; \\
   };
   \graph [use existing nodes] { (op) -- (l), (op) -- (r) };
   \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
