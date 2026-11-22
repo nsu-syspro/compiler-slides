@@ -24,13 +24,13 @@ subtitle: Compiler implementation
 
 ::: columns
 :::: {.column width=50%}
-values
-
+\centering
+values  
 $[-2^{63}, 2^{63})$
 ::::
 :::: {.column width=50%}
-operations
-
+\centering
+operations  
 `+` `-` `*` `/` `==` `<`
 ::::
 :::
@@ -46,13 +46,13 @@ operations
 
 ::: columns
 :::: {.column width=50%}
-values
-
+\centering
+values  
 `{false, true}`
 ::::
 :::: {.column width=50%}
-operations
-
+\centering
+operations  
 `&&` `||` `!`
 ::::
 :::
@@ -68,13 +68,13 @@ operations
 
 ::: columns
 :::: {.column width=50%}
-values
-
+\centering
+values  
 strings
 ::::
 :::: {.column width=50%}
-operations
-
+\centering
+operations  
 `+`, `charAt`, `length`
 ::::
 :::
@@ -90,13 +90,13 @@ operations
 
 ::: columns
 :::: {.column width=50%}
-values
-
+\centering
+values  
 lists of integers
 ::::
 :::: {.column width=50%}
-operations
-
+\centering
+operations  
 `++`, `map`, `length`
 ::::
 :::
