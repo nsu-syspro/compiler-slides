@@ -134,7 +134,15 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Static typing \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - Operations are checked at compile time, before the program runs
 - A program is accepted or rejected without ever executing it
@@ -145,7 +153,15 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Dynamic typing \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - Operations are checked at run time, against the values they receive
 - The same program can work on some inputs and fail on others
@@ -161,7 +177,8 @@ lists of integers
 \vspace{0.4em}
 \begin{minipage}[t][2.4cm][c]{\linewidth}
 \centering
-\langaxis<2->[Static][Dynamic]{Haskell/^-1.0, C\slash Rust/_-1.0, Scala\slash Java/^-0.7, Go\slash C++/_-0.7, TypeScript/0.05, Python\slash JavaScript/^0.75, Lua/_0.75, Bash/_1.0}
+\onslide<3->
+\langaxis<4->[Static][Dynamic]{Haskell/^-1.0, C\slash Rust/_-1.0, Scala\slash Java/^-0.7, Go\slash C++/_-0.7, TypeScript/0.05, Python\slash JavaScript/^0.75, Lua/_0.75, Bash/_1.0}
 \end{minipage}
 ```
 
@@ -175,7 +192,15 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Strong typing \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - An operation on mismatched operand types is an error
 - Static systems reject it at compile time, dynamic ones raise it at run time
@@ -186,7 +211,15 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Weak typing \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - An operation on mismatched operand types silently converts them
 - C widens `int` to `double` at compile time, inserting the conversion code
@@ -202,7 +235,7 @@ lists of integers
 \vspace{0.4em}
 \begin{minipage}[t][2.4cm][c]{\linewidth}
 \centering
-\langaxis<2->[Strong][Weak]{Haskell/^-0.9, Rust\slash Go/_-1.0, Python/_-0.65, Java/^-0.45, Scala/_-0.35, TypeScript/^-0.2, Lua/^0.3, C/_0.6, C++/^0.7, JavaScript/_0.9, Bash/^1.0}
+\onslide<3->\langaxis<4->[Strong][Weak]{Haskell/^-0.9, Rust\slash Go/_-1.0, Python/_-0.65, Java/^-0.45, Scala/_-0.35, TypeScript/^-0.2, Lua/^0.3, C/_0.6, C++/^0.7, JavaScript/_0.9, Bash/^1.0}
 \end{minipage}
 ```
 
@@ -215,7 +248,15 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Explicit types \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - Types are written out on declarations by the programmer
 - The checker only reads and compares the types it is given
@@ -226,7 +267,15 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Implicit types \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - Types are reconstructed by the compiler, never written
 - Hindley–Milner infers whole functions, Rust and Go infer locals
@@ -242,7 +291,7 @@ lists of integers
 \vspace{0.4em}
 \begin{minipage}[t][2.4cm][c]{\linewidth}
 \centering
-\langaxis<2->[Explicit][Implicit]{C/^-0.95, Java/_-0.8, C++/_-0.45, Rust\slash Go/^0.0, TypeScript/_0.15, Scala/^0.35, Python/_0.45, Haskell/_0.75, Lua\slash JavaScript/^0.85, Bash/_1.0}
+\onslide<3->\langaxis<4->[Explicit][Implicit]{C/^-0.95, Java/_-0.8, C++/_-0.45, Rust\slash Go/^0.0, TypeScript/_0.15, Scala/^0.35, Python/_0.45, Haskell/_0.75, Lua\slash JavaScript/^0.85, Bash/_1.0}
 \end{minipage}
 ```
 
@@ -255,7 +304,15 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Nominal typing \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - A type is its declared name: `class A`, `struct A`
 - Two types are the same only if they come from one declaration
@@ -266,7 +323,15 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Structural typing \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - A type is its shape: the fields and methods it provides
 - Two types are the same if their shapes match (TypeScript, Go interfaces)
@@ -282,7 +347,7 @@ lists of integers
 \vspace{0.4em}
 \begin{minipage}[t][2.4cm][c]{\linewidth}
 \centering
-\langaxis<2->[Nominal][Structural]{Java/^-1.0, Haskell/^-0.7, C++/_-0.7, Rust/^-0.45, Scala/_-0.45, Go/^0.0, C/_-0.1, Bash/_0.4, Python/^0.6, Lua/_0.7, TypeScript/_0.9, JavaScript/^1.0}
+\onslide<3->\langaxis<4->[Nominal][Structural]{Java/^-1.0, Haskell/^-0.7, C++/_-0.7, Rust/^-0.45, Scala/_-0.45, Go/^0.0, C/_-0.1, Bash/_0.4, Python/^0.6, Lua/_0.7, TypeScript/_0.9, JavaScript/^1.0}
 \end{minipage}
 ```
 
@@ -295,7 +360,15 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Sound type system \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - If the checker accepts the program, it cannot go wrong at run time
 - A type error is a caught exception, never memory corruption
@@ -306,7 +379,15 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
+```{=latex}
+\onslide<1->
+```
+
 ## Unsound type system \centering
+
+```{=latex}
+\onslide<2->
+```
 
 - A checked program can still go wrong at run time
 - Mistakes become undefined behavior instead of errors (C, C++)
@@ -322,7 +403,7 @@ lists of integers
 \vspace{0.4em}
 \begin{minipage}[t][2.4cm][c]{\linewidth}
 \centering
-\langaxis<2->[Sound][Unsound]{Haskell/^-0.9, Rust/_-0.9, Go/_-0.75, Python/^-0.55, Java/_-0.55, Lua/^-0.25, JavaScript/_-0.25, Scala/_0.05, TypeScript/^0.4, C\slash C++/_0.9, Bash/^1.0}
+\onslide<3->\langaxis<4->[Sound][Unsound]{Haskell/^-0.9, Rust/_-0.9, Go/_-0.75, Python/^-0.55, Java/_-0.55, Lua/^-0.25, JavaScript/_-0.25, Scala/_0.05, TypeScript/^0.4, C\slash C++/_0.9, Bash/^1.0}
 \end{minipage}
 ```
 
