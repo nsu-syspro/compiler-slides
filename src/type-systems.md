@@ -25,20 +25,14 @@ subtitle: Compiler implementation
 ::: columns
 :::: {.column width=50%}
 \centering
-values  
 $[-2^{63}, 2^{63})$
 ::::
 :::: {.column width=50%}
 \centering
-operations  
 `+` `-` `*` `/` `==` `<`
 ::::
 :::
 :::::
-
-```{=latex}
-\vspace{-0.5em}
-```
 
 ::::: block
 
@@ -47,20 +41,14 @@ operations
 ::: columns
 :::: {.column width=50%}
 \centering
-values  
 `{false, true}`
 ::::
 :::: {.column width=50%}
 \centering
-operations  
 `&&` `||` `!`
 ::::
 :::
 :::::
-
-```{=latex}
-\vspace{-0.5em}
-```
 
 ::::: block
 
@@ -69,20 +57,14 @@ operations
 ::: columns
 :::: {.column width=50%}
 \centering
-values  
 strings
 ::::
 :::: {.column width=50%}
 \centering
-operations  
 `+`, `charAt`, `length`
 ::::
 :::
 :::::
-
-```{=latex}
-\vspace{-0.5em}
-```
 
 ::::: block
 
@@ -91,12 +73,10 @@ operations
 ::: columns
 :::: {.column width=50%}
 \centering
-values  
 lists of integers
 ::::
 :::: {.column width=50%}
 \centering
-operations  
 `++`, `map`, `length`
 ::::
 :::
