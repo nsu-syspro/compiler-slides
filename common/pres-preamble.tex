@@ -274,25 +274,30 @@
     {\edef\langaxisvis{#1}}%
     {\def\langaxisvis{1-}}%
   \begin{tikzpicture}
-    \draw[<->, CtpOverlay2] ({-\langaxishalf-0.2}, 0) -- ({\langaxishalf+0.2}, 0);
-    \IfValueTF{#2}{\node[overlay, anchor=east, font=\langaxisfont\itshape] at ({-\langaxishalf-0.4}, 0) {#2};}{}
-    \IfValueTF{#3}{\node[overlay, anchor=west, font=\langaxisfont\itshape] at ({\langaxishalf+0.4}, 0) {#3};}{}
-    \foreach \langname/\langpos [count=\langi] in {#4} {%
-      \langaxisplace{\langaxisvis}{\langi}{\langname}{\langpos}%
-    }%
+    %% Fixed bounding box: the axis line itself, so every axis occupies
+    %% exactly the same box regardless of label widths
+    \useasboundingbox ({-\langaxishalf-0.2}, {-\langaxisvspan}) rectangle ({\langaxishalf+0.2}, {\langaxisvspan});
+    \begin{scope}[overlay]
+      \draw[<->, CtpOverlay2] ({-\langaxishalf-0.2}, 0) -- ({\langaxishalf+0.2}, 0);
+      \IfValueTF{#2}{\node[anchor=east, font=\langaxisfont\itshape] at ({-\langaxishalf-0.4}, 0) {#2};}{}
+      \IfValueTF{#3}{\node[anchor=west, font=\langaxisfont\itshape] at ({\langaxishalf+0.4}, 0) {#3};}{}
+      \foreach \langname/\langpos [count=\langi] in {#4} {%
+        \langaxisplace{\langaxisvis}{\langi}{\langname}{\langpos}%
+      }%
+    \end{scope}
   \end{tikzpicture}%
   \let\langaxisskipdefaults\relax
 }
 
 %% Default geometry; re-applied on every \langaxis call
 \newcommand{\langaxisdefaults}{%
-  \def\langaxishalf{5.5}\def\langaxisoffset{0.28}\def\langaxisdot{1.4pt}\def\langaxisfont{\small}}
+  \def\langaxishalf{5.5}\def\langaxisoffset{0.28}\def\langaxisdot{1.4pt}\def\langaxisfont{\small}\def\langaxisvspan{0.85}}
 
 %% Compact variant for stacking several axes on one slide;
 %% call immediately before the corresponding \langaxis
 \newcommand{\langaxiscompactset}{%
   \def\langaxisskipdefaults{}%
-  \def\langaxishalf{5.5}\def\langaxisoffset{0.22}\def\langaxisdot{1.1pt}\def\langaxisfont{\footnotesize}}
+  \def\langaxishalf{5.5}\def\langaxisoffset{0.22}\def\langaxisdot{1.1pt}\def\langaxisfont{\footnotesize}\def\langaxisvspan{0.7}}
 
 %% #1 = overlay spec, #2 = index, #3 = name, #4 = position (may carry ^ or _)
 \newcommand{\langaxisplace}[4]{%
