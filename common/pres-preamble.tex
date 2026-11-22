@@ -257,3 +257,57 @@
 \definecolor{googlegreen}{HTML}{34A753}
 \definecolor{googleorange}{HTML}{FE6D00}
 
+%%
+%% Language axis for classification slides
+%%
+
+\usepackage{xstring}
+
+%% \langaxis<overlay>[left pole][right pole]{Name/pos, Name/pos, ...}
+%%   pos in [-1; 1], scaled onto the axis half-width;
+%%   prefix a position with ^ to force the label above the axis,
+%%   with _ to force it below, otherwise labels alternate above/below;
+%%   languages appear only on the given overlay, the axis is always drawn
+\NewDocumentCommand{\langaxis}{ d<> o o m }{%
+  \IfValueTF{#1}%
+    {\edef\langaxisvis{#1}}%
+    {\def\langaxisvis{1-}}%
+  \begin{tikzpicture}
+    \draw[<->, CtpOverlay2] (-5.2, 0) -- (5.2, 0);
+    \IfValueTF{#2}{\node[anchor=east, font=\small\itshape] at (-5.4, 0) {#2};}{}
+    \IfValueTF{#3}{\node[anchor=west, font=\small\itshape] at (5.4, 0) {#3};}{}
+    \foreach \langname/\langpos [count=\langi] in {#4} {%
+      \langaxisplace{\langaxisvis}{\langi}{\langname}{\langpos}%
+    }%
+  \end{tikzpicture}%
+}
+
+%% #1 = overlay spec, #2 = index, #3 = name, #4 = position (may carry ^ or _)
+\newcommand{\langaxisplace}[4]{%
+  \IfBeginWith{#4}{^}{%
+    \StrGobbleLeft{#4}{1}[\langaxispos]%
+    \langaxisnode{#1}{#3}{\langaxispos}{1}%
+  }{%
+    \IfBeginWith{#4}{_}{%
+      \StrGobbleLeft{#4}{1}[\langaxispos]%
+      \langaxisnode{#1}{#3}{\langaxispos}{0}%
+    }{%
+      \ifodd#2\relax
+        \langaxisnode{#1}{#3}{#4}{1}%
+      \else
+        \langaxisnode{#1}{#3}{#4}{0}%
+      \fi
+    }%
+  }%
+}
+
+%% #1 = overlay spec, #2 = name, #3 = position, #4 = 1 above / 0 below
+\newcommand{\langaxisnode}[4]{%
+  \pgfmathsetmacro\langaxisx{#3*5.0}%
+  \fill[main, visible on=<#1>] (\langaxisx, 0) circle (1.4pt);
+  \ifnum#4=1
+    \node[anchor=south, font=\small, visible on=<#1>] at (\langaxisx, 0.28) {#2};%
+  \else
+    \node[anchor=north, font=\small, visible on=<#1>] at (\langaxisx, -0.28) {#2};%
+  \fi
+}

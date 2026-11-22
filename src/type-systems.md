@@ -127,6 +127,10 @@ lists of integers
 
 # Static vs dynamic checking
 
+```{=latex}
+\begin{minipage}[t][5.2cm][t]{\linewidth}
+```
+
 ::: columns
 :::: {.column width=50%}
 
@@ -151,3 +155,12 @@ lists of integers
 
 ::::
 :::
+
+```{=latex}
+\end{minipage}
+\vspace{0.4em}
+\begin{minipage}[t][2.4cm][c]{\linewidth}
+\centering
+\langaxis<2->[Static][Dynamic]{Rust/-0.95, Java/-0.8, C/-0.6, Go/-0.45, C++/-0.25, TypeScript/0.05, Python/0.6, Ruby/0.8, JavaScript/0.95}
+\end{minipage}
+```
