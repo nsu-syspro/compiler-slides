@@ -525,6 +525,7 @@ lists of integers
 
 ```{=latex}
 \begin{tikzpicture}[
+    xshift=8em,
     c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0,outer sep=auto},
     t/.style={font=\ttfamily},
   ]
