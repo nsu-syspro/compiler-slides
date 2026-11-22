@@ -136,22 +136,22 @@ lists of integers
 
 ## Static typing \centering
 
-- Checked at compile time, before the program runs
+- Checked at compile time, before the program ever runs
 - A program is accepted or rejected without ever executing it
-- The compiler must know the type of every expression
-- Every type is written out by the programmer or inferred
-- Costs a type checker in the compiler, checks are free at run time
+- The compiler must know the type of every expression in advance
+- Every type is written by the programmer or inferred by the compiler
+- Costs a type checker in the compiler; checks are free at run time
 
 ::::
 :::: {.column width=50%}
 
 ## Dynamic typing \centering
 
-- Checked at run time, on the values they actually receive
+- Checked at run time, on the values it actually receives
 - The same program can work on some inputs and fail on others
-- Every value carries a tag saying what it is
-- Every operation first checks the tag
-- Costs memory for tags and a check on each operation, on each execution
+- Every value carries a tag recording its type at run time
+- Every operation checks the tag first, then proceeds or fails
+- Costs memory for tags and a check on every operation at run time
 
 ::::
 :::
