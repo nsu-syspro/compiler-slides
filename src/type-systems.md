@@ -458,10 +458,10 @@ lists of integers
   \node[base,below=2em of p] (nr) {Name resolution};
   \node[base,draw=CtpTeal,very thick,text=CtpTeal,below=2em of nr] (tc) {Type checking};
   \node[base,below=2em of tc] (ir) {IR generation};
-  \draw (p)  -- (nr) node[midway,left] {AST};
-  \draw (nr) -- (tc) node[midway,left] {resolved AST};
-  \draw (tc) -- (ir) node[midway,left] {typed AST};
-  \draw (tc) -- (ir) node[midway,right] {diagnostics};
+  \draw (p)  -- (nr) node[midway,left,font=\small] {AST};
+  \draw (nr) -- (tc) node[midway,left,font=\small] {resolved AST};
+  \draw (tc) -- (ir) node[midway,left,font=\small] {typed AST};
+  \draw (tc) -- (ir) node[midway,right,font=\small] {diagnostics};
 \end{tikzpicture}
 ```
 
@@ -476,6 +476,12 @@ lists of integers
 
 ::: columns
 :::: {.column width=50%}
+
+```{=latex}
+\begin{onlyenv}<1-4>
+```
+
+::: block
 
 ## Traversal \centering
 
@@ -485,55 +491,29 @@ lists of integers
 - Operand types are matched against the parameter types
 - The result type becomes the type of the whole expression
 
-::::
-:::: {.column width=50%}
-
-```{=latex}
-\begin{minipage}[c][.7\textheight][c]{\linewidth}
-\centering
-```
-
-```{=latex}
-\begin{tikzpicture}[
-    c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0,outer sep=auto},
-    t/.style={font=\ttfamily},
-  ]
-  \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
-    \& \node[c,selected on=<3>,mismatch on=<4>] (op) {{+}}; \& \\
-    \node[c,selected on=<2>] (l) {{1}}; \& \& \node[c,selected on=<2>] (r) {{2.0}}; \\
-  };
-  \graph [use existing nodes] { (op) -- (l), (op) -- (r) };
-  \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
-  \node[t,visible on=<2->,below=1em of l] {{Int}};
-  \node[t,visible on=<2-3>,below=1em of r] {{Double}};
-  \node[t,CtpRed,visible on=<4>,below=1em of r] {{Double != Int}};
-\end{tikzpicture}
-```
-
-```{=latex}
-\end{minipage}
-```
-
-::::
 :::
 
-# Type checker
-
-::: columns
-:::: {.column width=50%}
-
 ```{=latex}
-\lstset{style=highlight}
+\end{onlyenv}
+\begin{onlyenv}<5->
 ```
+
+::: block
 
 ## Strong and weak \centering
 
 - The same mismatch reaches the checker in every language
-- A strong checker \cempht{stops}: it reports `Double != Int` and
-  rejects the program
-- A weak checker \cempht{inserts a conversion} and continues:
-  `2.0` becomes `Int`
+- A strong checker \textcolor{CtpRed}{stops}: it reports
+  \textcolor{CtpRed}{\texttt{Double != Int}} and rejects the program
+- A weak checker \textcolor{CtpPeach}{inserts a conversion} and
+  continues: \texttt{2.0} becomes \texttt{Int}
 - The compile succeeds; the fraction is lost silently at run time
+
+:::
+
+```{=latex}
+\end{onlyenv}
+```
 
 ::::
 :::: {.column width=50%}
@@ -549,22 +529,24 @@ lists of integers
     t/.style={font=\ttfamily},
   ]
   \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
-    \& \node[c,selected on=<3-4>,mismatch on=<3>] (op) {{+}}; \& \\
-    \& \& \node[c,t,draw=CtpOverlay2,text=CtpOverlay2,visible on=<4>] (conv) {{->}}; \\
-    \node[c,t,selected on=<2>] (l) {{1}}; \& \& \node[c,t,selected on=<2>] (r) {{2.0}}; \\
+    \& \node[c,selected on=<{3,6}>,mismatch on=<{4,5}>] (op) {{+}}; \& \\
+    \node[c,selected on=<2>] (l) {{1}}; \& \& \node[c,t,draw=CtpPeach,text=CtpPeach,visible on=<6>] (conv) {$\simeq$}; \\
+    \& \& \node[c,t,visible on=<6>] (rb) {{2.0}}; \\
   };
+  \node[c,t,selected on=<2>,visible on=<1-5>] (rt) at (conv) {{2.0}};
   \graph [use existing nodes] {
     (op) -- (l),
-    (op) -- [visible on=<1-3>] (r),
-    (op) -- [visible on=<4>] (conv),
-    (conv) -- [visible on=<4>] (r)
+    (op) -- [visible on=<1-5>] (rt),
+    (op) -- [visible on=<6>] (conv),
+    (conv) -- [visible on=<6>] (rb)
   };
   \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
-  \node[t,CtpTeal,visible on=<4>,right=2em of op] {{Int}};
+  \node[t,visible on=<6>,right=2em of op] {{Int}};
   \node[t,visible on=<2->,below=1em of l] {{Int}};
-  \node[t,visible on=<{2,4}>,below=1em of r] {{Double}};
-  \node[t,CtpRed,visible on=<3>,below=1em of r] {{Double != Int}};
-  \node[t,CtpOverlay2,visible on=<4>,right=1em of conv] {{Double -> Int}};
+  \node[t,visible on=<2-3>,below=1em of rt] {{Double}};
+  \node[t,CtpRed,visible on=<{4,5}>,below=1em of rt] {{Double != Int}};
+  \node[t,visible on=<6>,below=1em of rb] {{Double}};
+  \node[t,CtpPeach,visible on=<6>,right=1em of conv,align=center] {Int\\ $\uparrow$\\ Double};
 \end{tikzpicture}
 ```
 
