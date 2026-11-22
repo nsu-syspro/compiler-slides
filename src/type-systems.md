@@ -33,6 +33,10 @@ subtitle: Compiler implementation
 
 :::::
 
+```{=latex}
+\vspace{-1em}
+```
+
 ::::: block
 
 ## Bool \centering
@@ -42,27 +46,26 @@ subtitle: Compiler implementation
 
 :::::
 
-::::: block
-
-## double (C, Java) \centering
-
-- values: IEEE 754 floating-point numbers
-- operations: `+` `-` `*` `/` `==`
-
-:::::
+```{=latex}
+\vspace{-1em}
+```
 
 ::::: block
 
-## String (Java) \centering
+## String \centering
 
 - values: sequences of characters
 - operations: `+` concatenation, `length`, `charAt`
 
 :::::
 
+```{=latex}
+\vspace{-1em}
+```
+
 ::::: block
 
-## List[Int] (Scala) \centering
+## List[Int] \centering
 
 - values: sequences of integers
 - operations: `::` prepend, `map`, `length`
