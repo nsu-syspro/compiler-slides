@@ -125,7 +125,7 @@ lists of integers
 
 <!-- static vs dynamic: option A joined -->
 
-# Static vs dynamic checking
+# Static vs dynamic
 
 ```{=latex}
 \begin{minipage}[t][5.2cm][t]{\linewidth}
@@ -134,7 +134,7 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
-## Static checking \centering
+## Static typing \centering
 
 - Checked at compile time, before the program runs
 - A program is accepted or rejected without ever executing it
@@ -145,7 +145,7 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
-## Dynamic checking \centering
+## Dynamic typing \centering
 
 - Checked at run time, on the values they actually receive
 - The same program can work on some inputs and fail on others
@@ -166,7 +166,7 @@ lists of integers
 ```
 
 
-# Strong vs weak typing
+# Strong vs weak
 
 ```{=latex}
 \begin{minipage}[t][5.2cm][t]{\linewidth}
@@ -175,7 +175,7 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
-## Strong checking \centering
+## Strong typing \centering
 
 - An operation on mismatched operand types is an error
 - Static systems reject it at compile time, dynamic ones raise it at run time
@@ -186,7 +186,7 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
-## Weak checking \centering
+## Weak typing \centering
 
 - An operation on mismatched operand types silently converts them
 - C widens `int` to `double` at compile time, inserting the conversion code
@@ -206,7 +206,7 @@ lists of integers
 \end{minipage}
 ```
 
-# Explicit vs implicit types
+# Explicit vs implicit
 
 ```{=latex}
 \begin{minipage}[t][5.2cm][t]{\linewidth}
@@ -226,7 +226,7 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
-## Inferred types \centering
+## Implicit types \centering
 
 - Types are reconstructed by the compiler, never written
 - Hindley–Milner infers whole functions, Rust and Go infer locals
@@ -246,7 +246,7 @@ lists of integers
 \end{minipage}
 ```
 
-# Nominal vs structural typing
+# Nominal vs structural
 
 ```{=latex}
 \begin{minipage}[t][5.2cm][t]{\linewidth}
@@ -286,7 +286,7 @@ lists of integers
 \end{minipage}
 ```
 
-# Sound vs unsound checking
+# Sound vs unsound
 
 ```{=latex}
 \begin{minipage}[t][5.2cm][t]{\linewidth}
@@ -295,7 +295,7 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
-## Sound checking \centering
+## Sound type system \centering
 
 - If the checker accepts the program, it cannot go wrong at run time
 - A type error is a caught exception, never memory corruption
@@ -306,7 +306,7 @@ lists of integers
 ::::
 :::: {.column width=50%}
 
-## Unsound checking \centering
+## Unsound type system \centering
 
 - A checked program can still go wrong at run time
 - Mistakes become undefined behavior instead of errors (C, C++)
