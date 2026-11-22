@@ -22,14 +22,18 @@ subtitle: Compiler implementation
 
 ## Int64 \centering
 
-| values | operations |
-|:--:|:--:|
-| integers in $[-2^{63}, 2^{63})$ | `+` `-` `*` `/` `==` `<` |
+::: columns
+:::: {.column width=50%}
+values
 
-```{=latex}
-\vspace{-1em}
-```
+$[-2^{63}, 2^{63})$
+::::
+:::: {.column width=50%}
+operations
 
+`+` `-` `*` `/` `==` `<`
+::::
+:::
 :::::
 
 ```{=latex}
@@ -40,14 +44,18 @@ subtitle: Compiler implementation
 
 ## Bool \centering
 
-| values | operations |
-|:--:|:--:|
-| `{false, true}` | `&&` `||` `!` |
+::: columns
+:::: {.column width=50%}
+values
 
-```{=latex}
-\vspace{-1em}
-```
+`{false, true}`
+::::
+:::: {.column width=50%}
+operations
 
+`&&` `||` `!`
+::::
+:::
 :::::
 
 ```{=latex}
@@ -58,14 +66,18 @@ subtitle: Compiler implementation
 
 ## String \centering
 
-| values | operations |
-|:--:|:--:|
-| sequences of characters | `+`, `charAt`, `length` |
+::: columns
+:::: {.column width=50%}
+values
 
-```{=latex}
-\vspace{-1em}
-```
+strings
+::::
+:::: {.column width=50%}
+operations
 
+`+`, `charAt`, `length`
+::::
+:::
 :::::
 
 ```{=latex}
@@ -76,14 +88,18 @@ subtitle: Compiler implementation
 
 ## List[Int] \centering
 
-| values | operations |
-|:--:|:--:|
-| lists of integers | `++`, `map`, `length` |
+::: columns
+:::: {.column width=50%}
+values
 
-```{=latex}
-\vspace{-1em}
-```
+lists of integers
+::::
+:::: {.column width=50%}
+operations
 
+`++`, `map`, `length`
+::::
+:::
 :::::
 
 ::::
