@@ -135,19 +135,19 @@ lists of integers
 - Checked at compile time, before the program runs
 - A program is accepted or rejected without ever executing it
 - The compiler must know the type of every expression
-- A type checker to write and maintain, types written out by the programmer or inferred
-- Checks are free at run time
+- Every type is written out by the programmer or inferred
+- Costs a type checker in the compiler, checks are free at run time
 
 ::::
 :::: {.column width=50%}
 
 ## Dynamic checking \centering
 
-- Operations are checked at run time, on the values they actually receive
+- Checked at run time, on the values they actually receive
 - The same program can work on some inputs and fail on others
 - Every value carries a tag saying what it is
 - Every operation first checks the tag
-- Memory for tags and a check on each operation, on each execution
+- Costs memory for tags and a check on each operation, on each execution
 
 ::::
 :::
