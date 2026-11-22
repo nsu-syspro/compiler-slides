@@ -452,12 +452,12 @@ lists of integers
 \begin{tikzpicture}[
     ->,>=latex,
     every node/.style={align=center},
-    base/.style={draw,minimum height=2.2em,minimum width=4.2cm,inner sep=0.6em},
+    base/.style={draw,minimum height=2em,minimum width=11em,inner sep=0.5em},
   ]
-  \node[base] (p)  at (0,0)    {Parser};
-  \node[base] (nr) at (0,-1.4) {Name resolution};
-  \node[base,draw=CtpPeach,very thick] (tc) at (0,-2.8) {Type checking};
-  \node[base] (ir) at (0,-4.2) {IR generation};
+  \node[base] (p) {Parser};
+  \node[base,below=2em of p] (nr) {Name resolution};
+  \node[base,draw=CtpPeach,very thick,below=2em of nr] (tc) {Type checking};
+  \node[base,below=2em of tc] (ir) {IR generation};
   \draw (p)  -- (nr) node[midway,right] {AST};
   \draw (nr) -- (tc) node[midway,right] {resolved AST};
   \draw (tc) -- (ir) node[midway,right] {typed AST, diagnostics};
@@ -494,25 +494,22 @@ lists of integers
 
 ```{=latex}
 \begin{tikzpicture}[
-    every node/.style={font=\footnotesize},
-    c/.style={circle,draw,minimum size=2em,inner sep=0.15em},
-    t/.style={font=\itshape},
+    c/.style={circle,draw,minimum size=3em,inner sep=0.5em},
+    t/.style={font=\ttfamily},
   ]
-  \node[t,visible on=<3->] at (0,0.5) {$+\colon\mathit{Int}\times\mathit{Int}\to\mathit{Int}$};
-  \node[c] (op) at (0,0) {$+$};
-  \node[c,draw=CtpPeach,very thick,visible on=<3>] at (0,0) {};
-  \node[c,draw=CtpRed,very thick,visible on=<4>] at (0,0) {};
-  \node[c] (l) at (-0.9,-0.8) {$1$};
-  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (-0.9,-0.8) {};
-  \node[c] (r) at (0.9,-0.8) {$2.0$};
-  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (0.9,-0.8) {};
+  \node[c] (op) {{+}};
+  \node[c,draw=CtpPeach,very thick,visible on=<3>] at (op) {};
+  \node[c,draw=CtpRed,very thick,visible on=<4>] at (op) {};
+  \node[c,below left=1em and 1em of op] (l) {{1}};
+  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (l) {};
+  \node[c,below right=1em and 1em of op] (r) {{2.0}};
+  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (r) {};
   \draw (op) -- (l);
   \draw (op) -- (r);
-  \draw[visible on=<2->] (l.south) -- ++(0,-0.15);
-  \draw[visible on=<2->] (r.south) -- ++(0,-0.15);
-  \node[t,visible on=<2->] at (-0.9,-1.4) {$\mathit{Int}$};
-  \node[t,visible on=<2-3>] at (0.9,-1.4) {$\mathit{Double}$};
-  \node[t,CtpRed,visible on=<4>] at (1.15,-1.4) {$\mathit{Double}\ne\mathit{Int}$};
+  \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
+  \node[t,visible on=<2->,below=1em of l] {{Int}};
+  \node[t,visible on=<2-3>,below=1em of r] {{Double}};
+  \node[t,CtpRed,visible on=<4>,below=1em of r] {{Double != Int}};
 \end{tikzpicture}
 ```
 
