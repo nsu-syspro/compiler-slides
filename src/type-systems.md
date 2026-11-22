@@ -451,8 +451,8 @@ lists of integers
 ```{=latex}
 \begin{tikzpicture}[
     ->,>=latex,
-    every node/.style={font=\footnotesize,align=center},
-    base/.style={draw,minimum height=2em,minimum width=3.6cm,inner sep=0.6em},
+    every node/.style={align=center},
+    base/.style={draw,minimum height=2.2em,minimum width=4.2cm,inner sep=0.6em},
   ]
   \node[base] (p)  at (0,0)    {Parser};
   \node[base] (nr) at (0,-1.4) {Name resolution};
@@ -495,8 +495,8 @@ lists of integers
 ```{=latex}
 \begin{tikzpicture}[
     every node/.style={font=\footnotesize},
-    c/.style={circle,draw,minimum size=1.7em,inner sep=0.15em},
-    t/.style={font=\footnotesize\itshape},
+    c/.style={circle,draw,minimum size=2em,inner sep=0.15em},
+    t/.style={font=\itshape},
   ]
   \node[t,visible on=<3->] at (0,0.5) {$+\colon\mathit{Int}\times\mathit{Int}\to\mathit{Int}$};
   \node[c] (op) at (0,0) {$+$};
@@ -508,11 +508,11 @@ lists of integers
   \node[c,draw=CtpPeach,very thick,visible on=<2>] at (0.9,-0.8) {};
   \draw (op) -- (l);
   \draw (op) -- (r);
-  \draw[visible on=<2->] (l.south) -- ++(0,-0.12);
-  \draw[visible on=<2->] (r.south) -- ++(0,-0.12);
-  \node[t,visible on=<2->] at (-0.9,-1.3) {$\mathit{Int}$};
-  \node[t,visible on=<2-3>] at (0.9,-1.3) {$\mathit{Double}$};
-  \node[t,CtpRed,visible on=<4>] at (1.05,-1.3) {$\mathit{Double}\ne\mathit{Int}$};
+  \draw[visible on=<2->] (l.south) -- ++(0,-0.15);
+  \draw[visible on=<2->] (r.south) -- ++(0,-0.15);
+  \node[t,visible on=<2->] at (-0.9,-1.4) {$\mathit{Int}$};
+  \node[t,visible on=<2-3>] at (0.9,-1.4) {$\mathit{Double}$};
+  \node[t,CtpRed,visible on=<4>] at (1.15,-1.4) {$\mathit{Double}\ne\mathit{Int}$};
 \end{tikzpicture}
 ```
 
