@@ -456,7 +456,7 @@ lists of integers
   ]
   \node[base] (p) {Parser};
   \node[base,below=2em of p] (nr) {Name resolution};
-  \node[base,draw=CtpTeal,very thick,below=2em of nr] (tc) {Type checking};
+  \node[base,draw=CtpTeal,very thick,text=CtpTeal,below=2em of nr] (tc) {Type checking};
   \node[base,below=2em of tc] (ir) {IR generation};
   \draw (p)  -- (nr) node[midway,left] {AST};
   \draw (nr) -- (tc) node[midway,left] {resolved AST};
@@ -498,13 +498,9 @@ lists of integers
     c/.style={circle,draw,minimum size=3em,inner sep=0.5em},
     t/.style={font=\ttfamily},
   ]
-  \node[c] (op) {{+}};
-  \node[c,draw=CtpTeal,very thick,visible on=<3>] at (op) {};
-  \node[c,draw=CtpRed,very thick,visible on=<4>] at (op) {};
-  \node[c,below left=1em and 1em of op] (l) {{1}};
-  \node[c,draw=CtpTeal,very thick,visible on=<2>] at (l) {};
-  \node[c,below right=1em and 1em of op] (r) {{2.0}};
-  \node[c,draw=CtpTeal,very thick,visible on=<2>] at (r) {};
+  \node[c,alt=<3>{draw=CtpTeal,very thick,text=CtpTeal}{alt=<4>{draw=CtpRed,very thick,text=CtpRed}{}}] (op) {{+}};
+  \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{},below left=1em and 1em of op] (l) {{1}};
+  \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{},below right=1em and 1em of op] (r) {{2.0}};
   \draw (op) -- (l);
   \draw (op) -- (r);
   \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};

@@ -222,6 +222,11 @@
 \usepackage{tikz}
 \usetikzlibrary{tikzmark,shapes,matrix,calc,positioning,fit,graphs,arrows.meta,backgrounds,decorations.pathreplacing,overlay-beamer-styles,quotes}
 
+% beamer overlay-aware style switching: alt=<spec>{style if true}{style if false}
+\tikzset{
+  alt/.code args={<#1>#2#3}{\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}}},
+}
+
 \usetikzmarklibrary{listings}
 
 \tikzset{>=latex}
