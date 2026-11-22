@@ -498,11 +498,11 @@ lists of integers
     c/.style={circle,draw,minimum size=3em,inner sep=0.5em},
     t/.style={font=\ttfamily},
   ]
-  \node[c,alt=<3>{draw=CtpTeal,text=CtpTeal}{alt=<4>{draw=CtpRed,text=CtpRed}{}}] (op) {{+}};
-  \node[c,alt=<2>{draw=CtpTeal,text=CtpTeal}{},below left=1em and 1em of op] (l) {{1}};
-  \node[c,alt=<2>{draw=CtpTeal,text=CtpTeal}{},below right=1em and 1em of op] (r) {{2.0}};
-  \draw (op) -- (l);
-  \draw (op) -- (r);
+  \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
+    \& \node[c,alt=<3>{draw=CtpTeal,very thick,text=CtpTeal}{alt=<4>{draw=CtpRed,very thick,text=CtpRed}{}}] (op) {{+}}; \& \\
+    \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{}] (l) {{1}}; \& \& \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{}] (r) {{2.0}}; \\
+  };
+  \graph [use existing nodes] { (op) -- (l), (op) -- (r) };
   \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
   \node[t,visible on=<2->,below=1em of l] {{Int}};
   \node[t,visible on=<2-3>,below=1em of r] {{Double}};
