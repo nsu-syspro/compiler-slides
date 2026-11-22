@@ -426,6 +426,103 @@ lists of integers
 \langaxiscompactset\langaxis[Sound][Unsound]{Haskell/^-0.9, Rust/_-0.9, Go/_-0.75, Python/^-0.55, Java/_-0.55, Lua/^-0.25, JavaScript/_-0.25, Scala/_0.05, TypeScript/^0.4, C\slash C++/_0.9, Bash/^1.0}
 \end{center}
 ```
+
+# Type checker
+
+::: columns
+:::: {.column width=50%}
+
+## Pipeline \centering
+
+- \cemph{Type checker} sits between name resolution and code generation
+- Input: the AST with every name resolved to its declaration
+- Output: the same AST, each expression annotated with its type
+- Diagnostics for every mismatch, checking does not stop at the first
+- Reuses the scope stack built by name resolution *(recap)*
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\begin{tikzpicture}[
+    ->,>=latex,
+    every node/.style={font=\footnotesize,align=center},
+    base/.style={draw,minimum height=2em,minimum width=3.6cm,inner sep=0.6em},
+  ]
+  \node[base] (p)  at (0,0)    {Parser};
+  \node[base] (nr) at (0,-1.4) {Name resolution};
+  \node[base,draw=CtpMauve,very thick] (tc) at (0,-2.8) {Type checking};
+  \node[base] (ir) at (0,-4.2) {IR generation};
+  \draw (p)  -- (nr) node[midway,right] {AST};
+  \draw (nr) -- (tc) node[midway,right] {resolved AST};
+  \draw (tc) -- (ir) node[midway,right] {typed AST, diagnostics};
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# Type checker
+
+::: columns
+:::: {.column width=50%}
+
+## Traversal \centering
+
+- The checker visits the tree bottom-up, one node at a time
+- A variable node reads its type from the environment
+- An operator node fetches the operator's signature
+- Operand types are matched against the parameter types
+- The result type becomes the type of the whole expression
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\begin{tikzpicture}[
+    every node/.style={font=\footnotesize},
+    c/.style={circle,draw,minimum size=1.7em,inner sep=0.15em},
+    t/.style={font=\footnotesize\itshape},
+  ]
+  \node[t,CtpMauve,visible on=<3->] at (0,0.9) {$+\colon\mathit{Int}\times\mathit{Int}\to\mathit{Int}$};
+  \node[c] (op) at (0,0) {$+$};
+  \node[c,draw=CtpMauve,very thick,visible on=<3>] at (0,0) {$+$};
+  \node[c,draw=CtpRed,very thick,visible on=<4>] at (0,0) {$+$};
+  \node[c] (l) at (-1.6,-1.5) {$1$};
+  \node[c,draw=CtpMauve,very thick,visible on=<2>] at (-1.6,-1.5) {$1$};
+  \node[c] (r) at (1.6,-1.5) {$2.0$};
+  \node[c,draw=CtpMauve,very thick,visible on=<2>] at (1.6,-1.5) {$2.0$};
+  \draw (op) -- (l);
+  \draw (op) -- (r);
+  \draw[visible on=<2->] (l.south) -- ++(0,-0.2);
+  \draw[visible on=<2->] (r.south) -- ++(0,-0.2);
+  \node[t,visible on=<2->] at (-1.6,-2.25) {$\mathit{Int}$};
+  \node[t,visible on=<2-3>] at (1.6,-2.25) {$\mathit{Double}$};
+  \node[t,CtpRed,visible on=<4>] at (1.6,-2.25) {$\mathit{Double}\ne\mathit{Int}$};
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # {.plain}
 
 \centering
