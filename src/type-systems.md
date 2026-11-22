@@ -26,6 +26,10 @@ subtitle: Compiler implementation
 |:--:|:--:|
 | integers in $[-2^{63}, 2^{63})$ | `+` `-` `*` `/` `==` `<` |
 
+```{=latex}
+\vspace{-1em}
+```
+
 :::::
 
 ```{=latex}
@@ -39,6 +43,10 @@ subtitle: Compiler implementation
 | values | operations |
 |:--:|:--:|
 | `{false, true}` | `&&` `||` `!` |
+
+```{=latex}
+\vspace{-1em}
+```
 
 :::::
 
@@ -54,6 +62,10 @@ subtitle: Compiler implementation
 |:--:|:--:|
 | sequences of characters | `+`, `charAt`, `length` |
 
+```{=latex}
+\vspace{-1em}
+```
+
 :::::
 
 ```{=latex}
@@ -67,6 +79,10 @@ subtitle: Compiler implementation
 | values | operations |
 |:--:|:--:|
 | lists of integers | `++`, `map`, `length` |
+
+```{=latex}
+\vspace{-1em}
+```
 
 :::::
 
