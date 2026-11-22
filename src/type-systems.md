@@ -495,7 +495,7 @@ lists of integers
 
 ```{=latex}
 \begin{tikzpicture}[
-    c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0.5em,outer sep=auto},
+    c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0,outer sep=auto},
     t/.style={font=\ttfamily},
   ]
   \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
