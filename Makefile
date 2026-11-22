@@ -1,6 +1,6 @@
 ############################
 # Usage
-# make         # converts all src/*.md files to publish/*.pdf files using pandoc
+# make         # converts all src/*.md files to publish/*.pdf files
 # make clean   # cleans up publish/*.pdf artifacts
 ############################
 
@@ -58,7 +58,7 @@ pdf:  $(PDF) #$(PDF_DARK)
 
 clean: 
 	@echo "Cleaning up..."
-	rm -rvf $(PDF) $(SVG_PDF) $(DOT_PDF)
+	rm -rvf $(PDF) $(SVG_PDF) $(DOT_PDF) $(BUILD_DIR)
 
 ############################
 # Publish patterns
@@ -69,17 +69,34 @@ $(PDF_PUBLISH): $(PUBLISH_DIR)/%.pdf: $(SRC_DIR)/%.pdf
 	cp $< $@
 
 ############################
-# Pandoc patterns
+# Pandoc + LuaLaTeX patterns
 ############################
+# pandoc's own PDF pipeline always runs the LaTeX engine 4 times (beamer's
+# "TOC is present" makes its rerun loop never settle early), ~51s for a 47-page
+# deck. One lualatex pass produces a pixel-identical PDF in ~12s, so we go
+# through an intermediate .tex and run the engine once.
 
-PANDOC_ARGS :=
+PANDOC_COMMON = $(COMMON_DIR)/pres.yaml -H $(COMMON_DIR)/pres-preamble.tex \
+	--listings --template $(COMMON_DIR)/pres-template.tex --slide-level=1
 
-$(PDF): %.pdf: %.md
-	$(PANDOC) $(PANDOC_ARGS) -t beamer --pdf-engine lualatex $< -o $@
+BUILD_DIR = build
 
-$(PDF_DARK): %-dark.pdf: %.md
-	$(PANDOC) $(PANDOC_ARGS) -t beamer --pdf-engine lualatex --variable darkmode=true $< -o $@
-	
+$(BUILD_DIR)/%.tex: $(SRC_DIR)/%.md common/pres.yaml common/pres-preamble.tex common/pres-template.tex
+	@mkdir -p $(@D)
+	$(PANDOC) $(PANDOC_COMMON) -t beamer $< -o $@
+
+$(PDF): $(SRC_DIR)/%.pdf: $(BUILD_DIR)/%.tex
+	cd $(BUILD_DIR) && lualatex -interaction=nonstopmode $*.tex > /dev/null
+	cp $(BUILD_DIR)/$*.pdf $@
+
+$(BUILD_DIR)/%-dark.tex: $(SRC_DIR)/%.md common/pres.yaml common/pres-preamble.tex common/pres-template.tex
+	@mkdir -p $(@D)
+	$(PANDOC) $(PANDOC_COMMON) -t beamer --variable darkmode=true $< -o $@
+
+$(PDF_DARK): $(SRC_DIR)/%-dark.pdf: $(BUILD_DIR)/%-dark.tex
+	cd $(BUILD_DIR) && lualatex -interaction=nonstopmode $*-dark.tex > /dev/null
+	cp $(BUILD_DIR)/$*-dark.pdf $@
+
 ############################
 # Image patterns
 ############################
@@ -106,5 +123,4 @@ $(PDF): $(SRC_DIR)/%.pdf: $(ROOT_IMAGE_DEPS) $(COMMON_PNG_IMAGE_DEPS) $$(TARGET_
 $(PDF_DARK): $(SRC_DIR)/%-dark.pdf: $(ROOT_IMAGE_DEPS) $(COMMON_PNG_IMAGE_DEPS) $$(TARGET_IMAGE_DEPS)
 
 $(PDF) $(PDF_DARK): $(COMMON_DIR)/pres.yaml $(COMMON_DIR)/pres-preamble.tex $(COMMON_DIR)/pres-template.tex
-$(PDF) $(PDF_DARK): PANDOC_ARGS = $(COMMON_DIR)/pres.yaml -H $(COMMON_DIR)/pres-preamble.tex --listings --template $(COMMON_DIR)/pres-template.tex --slide-level=1
 
