@@ -564,14 +564,13 @@ lists of integers
 ::: columns
 :::: {.column width=50%}
 
-## Bidirectional \centering
+## Types propagate in both directions \centering
 
 - The same traversal moves types in both directions: results flow up,
   expectations flow down
-- \cempht{Synthesis}: the node computes its type from below — operands
-  first, then the operator's signature
-- \cempht{Checking}: the node verifies against the expected type handed
-  to it from above
+- \cempht{Synthesis} computes a type bottom-up, from the operands
+- \cempht{Checking} verifies an expression top-down against a type
+  from the context
 - Annotations and parameters pass expected types down
 - The same literal can get different types in different contexts
 
