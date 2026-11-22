@@ -517,6 +517,108 @@ lists of integers
 ::::
 :::
 
+# Type checker
+
+::: columns
+:::: {.column width=50%}
+
+```{=latex}
+\lstset{style=highlight}
+```
+
+## Strong and weak \centering
+
+- The same mismatch reaches the checker in every language
+- A strong checker \cempht{stops}: it reports `Double != Int` and
+  rejects the program
+- A weak checker \cempht{inserts a conversion} and continues:
+  `2.0` becomes `Int`
+- The compile succeeds; the fraction is lost silently at run time
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.7\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\begin{tikzpicture}[
+    c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0,outer sep=auto},
+    t/.style={font=\ttfamily},
+  ]
+  \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
+    \& \node[c,selected on=<3-4>,mismatch on=<3>] (op) {{+}}; \& \\
+    \& \& \node[c,t,draw=CtpOverlay2,text=CtpOverlay2,visible on=<4>] (conv) {{->}}; \\
+    \node[c,t,selected on=<2>] (l) {{1}}; \& \& \node[c,t,selected on=<2>] (r) {{2.0}}; \\
+  };
+  \graph [use existing nodes] {
+    (op) -- (l),
+    (op) -- [visible on=<1-3>] (r),
+    (op) -- [visible on=<4>] (conv),
+    (conv) -- [visible on=<4>] (r)
+  };
+  \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
+  \node[t,CtpTeal,visible on=<4>,right=2em of op] {{Int}};
+  \node[t,visible on=<2->,below=1em of l] {{Int}};
+  \node[t,visible on=<{2,4}>,below=1em of r] {{Double}};
+  \node[t,CtpRed,visible on=<3>,below=1em of r] {{Double != Int}};
+  \node[t,CtpOverlay2,visible on=<4>,right=1em of conv] {{Double -> Int}};
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
+# Type checker
+
+::: columns
+:::: {.column width=50%}
+
+## Synthesize and check \centering
+
+- \cempht{Synthesis} computes a type bottom-up, from the operands
+- \cempht{Checking} verifies an expression against a type from the
+  context
+- Annotations, parameters and literals pass expected types down
+- The same literal can get different types in different contexts
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.7\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\begin{tikzpicture}[
+    c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0,outer sep=auto},
+    t/.style={font=\ttfamily},
+  ]
+  \matrix (m) [ampersand replacement=\&,row sep=1.5em,column sep=2em] {
+    \& \node[c,t] (let) {{let}}; \& \\
+    \node[c,t,selected on=<2>] (ann) {{x : Float}}; \& \& \node[c,t,selected on=<3>] (lit) {{1}}; \\
+  };
+  \graph [use existing nodes] { (let) -- (ann), (let) -- (lit) };
+  \draw[->,CtpTeal,thick,visible on=<2->] (ann) -- (lit)
+    node[pos=0.6,below=0.5em,t,CtpTeal] {{check: Float}};
+  \node[t,CtpTeal,visible on=<3>,below=1em of lit] {{1 : Float}};
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # {.plain}
 
 \centering
