@@ -483,7 +483,7 @@ lists of integers
 
 ::: block
 
-## Traversal \centering
+## Traversal \centering \phantom{g}
 
 - The checker visits the tree bottom-up, one node at a time
 - A variable node reads its type from the environment
@@ -547,6 +547,7 @@ lists of integers
   \node[t,visible on=<2-3>,below=1em of rt] {{Double}};
   \node[t,CtpRed,visible on=<{4,5}>,below=1em of rt] {{Double != Int}};
   \node[t,visible on=<6>,below=1em of rb] {{Double}};
+  \node[t,left=1em of l] {\phantom{Double}};
   \node[t,CtpPeach,visible on=<6>,right=1em of conv,align=center] {Int\\ $\uparrow$\\ Double};
 \end{tikzpicture}
 ```
