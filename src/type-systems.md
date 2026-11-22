@@ -3,7 +3,7 @@ title: Type systems
 subtitle: Compiler implementation
 ---
 
-# What is a type {.fragile}
+# What is a type
 
 ::: columns
 :::: {.column width=50%}
@@ -11,70 +11,64 @@ subtitle: Compiler implementation
 ## Definition \centering
 
 - A type is a set of values and a set of operations valid on those values
-- `Int64`: values in [-2^63, 2^63), operations `+` `-` `*` `/` `==` `<`
-- `Bool`: values {false, true}, operations `&&` `||` `!`
-- A type system is a set of rules assigning types to expressions, variables, storage locations
-- The rules define which operations apply to which types
+- A type system assigns types to expressions, variables, storage locations
+- A program is well-typed when every operation is applied to values of a type that supports it
+- Programs violating this are ill-typed and are rejected
 
 ::::
 :::: {.column width=50%}
-
-```{=latex}
-\begin{minipage}[c][.8\textheight][c]{\linewidth}
-\small
-```
 
 ::::: block
 
 ## Int64 \centering
 
-- values: integers in [-2^63, 2^63)
-- operations: `+` `-` `*` `/` `==` `<`
+| values | operations |
+|:--:|:--:|
+| integers in $[-2^{63}, 2^{63})$ | `+` `-` `*` `/` `==` `<` |
 
 :::::
 
 ```{=latex}
-\vspace{-1em}
+\vspace{-0.5em}
 ```
 
 ::::: block
 
 ## Bool \centering
 
-- values: {false, true}
-- operations: `&&` `||` `!`
+| values | operations |
+|:--:|:--:|
+| `{false, true}` | `&&` `||` `!` |
 
 :::::
 
 ```{=latex}
-\vspace{-1em}
+\vspace{-0.5em}
 ```
 
 ::::: block
 
 ## String \centering
 
-- values: sequences of characters
-- operations: `+` concatenation, `length`, `charAt`
+| values | operations |
+|:--:|:--:|
+| sequences of characters | `+`, `charAt`, `length` |
 
 :::::
 
 ```{=latex}
-\vspace{-1em}
+\vspace{-0.5em}
 ```
 
 ::::: block
 
 ## List[Int] \centering
 
-- values: sequences of integers
-- operations: `::` prepend, `map`, `length`
+| values | operations |
+|:--:|:--:|
+| lists of integers | `++`, `map`, `length` |
 
 :::::
-
-```{=latex}
-\end{minipage}
-```
 
 ::::
 :::
