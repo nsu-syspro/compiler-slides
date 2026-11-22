@@ -444,7 +444,7 @@ lists of integers
 :::: {.column width=50%}
 
 ```{=latex}
-\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
 \centering
 ```
 
@@ -488,7 +488,7 @@ lists of integers
 :::: {.column width=50%}
 
 ```{=latex}
-\begin{minipage}[c][.8\textheight][c]{\linewidth}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
 \centering
 ```
 
