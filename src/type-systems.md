@@ -434,7 +434,7 @@ lists of integers
 
 ## Pipeline \centering
 
-- \cemph{Type checker} sits between name resolution and code generation
+- \cemphp{Type checker} sits between name resolution and code generation
 - Input: the AST with every name resolved to its declaration
 - Output: the same AST, each expression annotated with its type
 - Diagnostics for every mismatch, checking does not stop at the first
@@ -452,12 +452,12 @@ lists of integers
 \begin{tikzpicture}[
     ->,>=latex,
     every node/.style={font=\footnotesize,align=center},
-    base/.style={draw,minimum height=2em,minimum width=3.6cm,inner sep=0.6em},
+    base/.style={draw,minimum height=1.6em,minimum width=3.6cm,inner sep=0.5em},
   ]
   \node[base] (p)  at (0,0)    {Parser};
-  \node[base] (nr) at (0,-1.4) {Name resolution};
-  \node[base,draw=CtpMauve,very thick] (tc) at (0,-2.8) {Type checking};
-  \node[base] (ir) at (0,-4.2) {IR generation};
+  \node[base] (nr) at (0,-0.85) {Name resolution};
+  \node[base,draw=CtpPeach,very thick] (tc) at (0,-1.7) {Type checking};
+  \node[base] (ir) at (0,-2.55) {IR generation};
   \draw (p)  -- (nr) node[midway,right] {AST};
   \draw (nr) -- (tc) node[midway,right] {resolved AST};
   \draw (tc) -- (ir) node[midway,right] {typed AST, diagnostics};
@@ -498,21 +498,21 @@ lists of integers
     c/.style={circle,draw,minimum size=1.7em,inner sep=0.15em},
     t/.style={font=\footnotesize\itshape},
   ]
-  \node[t,CtpMauve,visible on=<3->] at (0,0.9) {$+\colon\mathit{Int}\times\mathit{Int}\to\mathit{Int}$};
+  \node[t,visible on=<3->] at (0,0.5) {$+\colon\mathit{Int}\times\mathit{Int}\to\mathit{Int}$};
   \node[c] (op) at (0,0) {$+$};
-  \node[c,draw=CtpMauve,very thick,visible on=<3>] at (0,0) {$+$};
-  \node[c,draw=CtpRed,very thick,visible on=<4>] at (0,0) {$+$};
-  \node[c] (l) at (-1.6,-1.5) {$1$};
-  \node[c,draw=CtpMauve,very thick,visible on=<2>] at (-1.6,-1.5) {$1$};
-  \node[c] (r) at (1.6,-1.5) {$2.0$};
-  \node[c,draw=CtpMauve,very thick,visible on=<2>] at (1.6,-1.5) {$2.0$};
+  \node[c,draw=CtpPeach,very thick,visible on=<3>] at (0,0) {};
+  \node[c,draw=CtpRed,very thick,visible on=<4>] at (0,0) {};
+  \node[c] (l) at (-0.9,-0.8) {$1$};
+  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (-0.9,-0.8) {};
+  \node[c] (r) at (0.9,-0.8) {$2.0$};
+  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (0.9,-0.8) {};
   \draw (op) -- (l);
   \draw (op) -- (r);
-  \draw[visible on=<2->] (l.south) -- ++(0,-0.2);
-  \draw[visible on=<2->] (r.south) -- ++(0,-0.2);
-  \node[t,visible on=<2->] at (-1.6,-2.25) {$\mathit{Int}$};
-  \node[t,visible on=<2-3>] at (1.6,-2.25) {$\mathit{Double}$};
-  \node[t,CtpRed,visible on=<4>] at (1.6,-2.25) {$\mathit{Double}\ne\mathit{Int}$};
+  \draw[visible on=<2->] (l.south) -- ++(0,-0.12);
+  \draw[visible on=<2->] (r.south) -- ++(0,-0.12);
+  \node[t,visible on=<2->] at (-0.9,-1.3) {$\mathit{Int}$};
+  \node[t,visible on=<2-3>] at (0.9,-1.3) {$\mathit{Double}$};
+  \node[t,CtpRed,visible on=<4>] at (1.05,-1.3) {$\mathit{Double}\ne\mathit{Int}$};
 \end{tikzpicture}
 ```
 
