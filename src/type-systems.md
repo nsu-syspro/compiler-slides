@@ -498,9 +498,9 @@ lists of integers
     c/.style={circle,draw,minimum size=3em,inner sep=0.5em},
     t/.style={font=\ttfamily},
   ]
-  \node[c,alt=<3>{draw=CtpTeal,very thick,text=CtpTeal}{alt=<4>{draw=CtpRed,very thick,text=CtpRed}{}}] (op) {{+}};
-  \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{},below left=1em and 1em of op] (l) {{1}};
-  \node[c,alt=<2>{draw=CtpTeal,very thick,text=CtpTeal}{},below right=1em and 1em of op] (r) {{2.0}};
+  \node[c,alt=<3>{draw=CtpTeal,text=CtpTeal}{alt=<4>{draw=CtpRed,text=CtpRed}{}}] (op) {{+}};
+  \node[c,alt=<2>{draw=CtpTeal,text=CtpTeal}{},below left=1em and 1em of op] (l) {{1}};
+  \node[c,alt=<2>{draw=CtpTeal,text=CtpTeal}{},below right=1em and 1em of op] (r) {{2.0}};
   \draw (op) -- (l);
   \draw (op) -- (r);
   \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
