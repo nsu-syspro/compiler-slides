@@ -161,7 +161,7 @@ lists of integers
 \vspace{0.4em}
 \begin{minipage}[t][2.4cm][c]{\linewidth}
 \centering
-\langaxis<2->[Static][Dynamic]{Haskell/-1.0, Rust/_-1.0, Scala/-0.8, Java/_-0.8, C/-0.6, Go/-0.45, C++/-0.35, TypeScript/0.05, Python/0.6, JavaScript/^0.85, Lua/_0.85, Bash/_1.0}
+\langaxis<2->[Static][Dynamic]{C/^-1.0, Haskell\slash Rust/_-1.0, Scala\slash Java/^-0.7, Go\slash C++/_-0.7, TypeScript/0.05, Python\slash JavaScript/^0.75, Lua/_0.75, Bash/_1.0}
 \end{minipage}
 ```
 
@@ -169,18 +169,18 @@ lists of integers
 
 ```{=latex}
 \begin{center}
-\langaxiscompactset\langaxis[Static][Dynamic]{Haskell/-1.0, Rust/_-1.0, Scala/-0.8, Java/_-0.8, C/-0.6, Go/-0.45, C++/-0.35, TypeScript/0.05, Python/0.6, JavaScript/^0.85, Lua/_0.85, Bash/_1.0}
+\langaxiscompactset\langaxis[Static][Dynamic]{C/^-1.0, Haskell\slash Rust/_-1.0, Scala\slash Java/^-0.7, Go\slash C++/_-0.7, TypeScript/0.05, Python\slash JavaScript/^0.75, Lua/_0.75, Bash/_1.0}
 
 \vspace{-0.5em}
-\langaxiscompactset\langaxis[Strong][Weak]{Haskell/^-0.9, Rust/_-1.0, Go/^-0.75, Python/_-0.65, Java/^-0.45, Scala/_-0.35, TypeScript/^-0.25, Lua/^0.3, C/_0.6, C++/^0.7, JavaScript/_0.9, Bash/^1.0}
+\langaxiscompactset\langaxis[Strong][Weak]{Haskell/^-0.9, Rust\slash Go/_-1.0, Python/_-0.65, Java/^-0.45, Scala/_-0.35, TypeScript/^-0.2, Lua/^0.3, C/_0.6, C++/^0.7, JavaScript/_0.9, Bash/^1.0}
 
 \vspace{-0.5em}
-\langaxiscompactset\langaxis[Explicit][Implicit]{C/^-0.95, Java/_-0.8, Go/^-0.6, C++/_-0.45, Rust/^0.0, TypeScript/_0.15, Scala/^0.4, Python/_0.45, Lua\slash JavaScript/^0.85, Haskell/_0.75, Bash/_1.0}
+\langaxiscompactset\langaxis[Explicit][Implicit]{C/^-0.95, Java/_-0.8, C++/_-0.45, Rust\slash Go/^0.0, TypeScript/_0.15, Scala\slash Python/^0.45, Haskell/_0.75, Lua\slash JavaScript/^0.85, Bash/_1.0}
 
 \vspace{-0.5em}
-\langaxiscompactset\langaxis[Nominal][Structural]{Java/^-1.0, Haskell/^-0.7, C++/_-0.7, Rust/_-0.5, Scala/^-0.35, C/_-0.1, Go/_0.0, Bash/_0.4, Python/^0.6, Lua/_0.7, TypeScript/_0.9, JavaScript/^1.0}
+\langaxiscompactset\langaxis[Nominal][Structural]{Java/^-1.0, Haskell/^-0.7, C++/_-0.7, Rust\slash Scala/_-0.45, C\slash Go/^0.0, Bash/_0.4, Python/^0.6, Lua/_0.7, TypeScript/_0.9, JavaScript/^1.0}
 
 \vspace{-0.5em}
-\langaxiscompactset\langaxis[Sound][Unsound]{Haskell\slash Rust/_-0.9, Go/^-0.8, Python/^-0.55, Java/_-0.55, Lua/_-0.3, JavaScript/^-0.2, Scala/_0.05, TypeScript/^0.4, C/_0.85, C++/_0.95, Bash/^1.0}
+\langaxiscompactset\langaxis[Sound][Unsound]{Haskell\slash Rust/_-0.9, Go/^-0.8, Python/^-0.55, Java/_-0.55, Lua/^-0.25, JavaScript/_-0.25, Scala/_0.05, TypeScript/^0.4, C\slash C++/_0.9, Bash/^1.0}
 \end{center}
 ```
