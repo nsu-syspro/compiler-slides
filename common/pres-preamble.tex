@@ -269,18 +269,30 @@
 %%   with _ to force it below, otherwise labels alternate above/below;
 %%   languages appear only on the given overlay, the axis is always drawn
 \NewDocumentCommand{\langaxis}{ d<> o o m }{%
+  \ifx\langaxisskipdefaults\empty\else\langaxisdefaults\fi
   \IfValueTF{#1}%
     {\edef\langaxisvis{#1}}%
     {\def\langaxisvis{1-}}%
   \begin{tikzpicture}
-    \draw[<->, CtpOverlay2] (-5.2, 0) -- (5.2, 0);
-    \IfValueTF{#2}{\node[anchor=east, font=\small\itshape] at (-5.4, 0) {#2};}{}
-    \IfValueTF{#3}{\node[anchor=west, font=\small\itshape] at (5.4, 0) {#3};}{}
+    \draw[<->, CtpOverlay2] ({-\langaxishalf-0.2}, 0) -- ({\langaxishalf+0.2}, 0);
+    \IfValueTF{#2}{\node[overlay, anchor=east, font=\langaxisfont\itshape] at ({-\langaxishalf-0.4}, 0) {#2};}{}
+    \IfValueTF{#3}{\node[overlay, anchor=west, font=\langaxisfont\itshape] at ({\langaxishalf+0.4}, 0) {#3};}{}
     \foreach \langname/\langpos [count=\langi] in {#4} {%
       \langaxisplace{\langaxisvis}{\langi}{\langname}{\langpos}%
     }%
   \end{tikzpicture}%
+  \let\langaxisskipdefaults\relax
 }
+
+%% Default geometry; re-applied on every \langaxis call
+\newcommand{\langaxisdefaults}{%
+  \def\langaxishalf{5.5}\def\langaxisoffset{0.28}\def\langaxisdot{1.4pt}\def\langaxisfont{\small}}
+
+%% Compact variant for stacking several axes on one slide;
+%% call immediately before the corresponding \langaxis
+\newcommand{\langaxiscompactset}{%
+  \def\langaxisskipdefaults{}%
+  \def\langaxishalf{5.5}\def\langaxisoffset{0.22}\def\langaxisdot{1.1pt}\def\langaxisfont{\footnotesize}}
 
 %% #1 = overlay spec, #2 = index, #3 = name, #4 = position (may carry ^ or _)
 \newcommand{\langaxisplace}[4]{%
@@ -303,11 +315,13 @@
 
 %% #1 = overlay spec, #2 = name, #3 = position, #4 = 1 above / 0 below
 \newcommand{\langaxisnode}[4]{%
-  \pgfmathsetmacro\langaxisx{#3*5.0}%
-  \fill[main, visible on=<#1>] (\langaxisx, 0) circle (1.4pt);
+  \pgfmathsetmacro\langaxisx{#3*\langaxishalf}%
   \ifnum#4=1
-    \node[anchor=south, font=\small, visible on=<#1>] at (\langaxisx, 0.28) {#2};%
+    \draw[very thin, CtpOverlay2, visible on=<#1>] (\langaxisx, 0.06) -- (\langaxisx, \langaxisoffset);
+    \node[anchor=south, font=\langaxisfont, visible on=<#1>] at (\langaxisx, \langaxisoffset) {#2};%
   \else
-    \node[anchor=north, font=\small, visible on=<#1>] at (\langaxisx, -0.28) {#2};%
+    \draw[very thin, CtpOverlay2, visible on=<#1>] (\langaxisx, -0.06) -- (\langaxisx, -\langaxisoffset);
+    \node[anchor=north, font=\langaxisfont, visible on=<#1>] at (\langaxisx, -\langaxisoffset) {#2};%
   \fi
+  \fill[main, visible on=<#1>] (\langaxisx, 0) circle (\langaxisdot);
 }
