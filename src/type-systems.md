@@ -175,7 +175,7 @@ lists of integers
 \langaxiscompactset\langaxis[Strong][Weak]{Haskell/^-0.9, Rust\slash Go/_-1.0, Python/_-0.65, Java/^-0.45, Scala/_-0.35, TypeScript/^-0.2, Lua/^0.3, C/_0.6, C++/^0.7, JavaScript/_0.9, Bash/^1.0}
 
 \vspace{-0.5em}
-\langaxiscompactset\langaxis[Explicit][Implicit]{C/^-0.95, Java/_-0.8, C++/_-0.45, Rust\slash Go/^0.0, TypeScript/_0.15, Python/^0.45, Scala/_0.45, Haskell/_0.75, Lua\slash JavaScript/^0.85, Bash/_1.0}
+\langaxiscompactset\langaxis[Explicit][Implicit]{C/^-0.95, Java/_-0.8, C++/_-0.45, Rust\slash Go/^0.0, TypeScript/_0.15, Python/^0.45, Scala/_0.35, Haskell/_0.75, Lua\slash JavaScript/^0.85, Bash/_1.0}
 
 \vspace{-0.5em}
 \langaxiscompactset\langaxis[Nominal][Structural]{Java/^-1.0, Haskell/^-0.7, C++/_-0.7, Rust/^-0.45, Scala/_-0.45, Go/^0.0, C/_0.0, Bash/_0.4, Python/^0.6, Lua/_0.7, TypeScript/_0.9, JavaScript/^1.0}
