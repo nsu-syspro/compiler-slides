@@ -3,24 +3,44 @@ title: Type systems
 subtitle: Compiler implementation
 ---
 
-# What is a type
+# Definitions
 
 ::: columns
 :::: {.column width=50%}
 
-## Definition \centering
+. . .
 
-- A type is a set of values and a set of operations valid on those values
-- A type system assigns types to expressions, variables, storage locations
-- A program is well-typed when every operation is applied to values of a type that supports it
-- Programs violating this are ill-typed and are rejected
+## Type \centering
+
+. . .
+
+A type is a set of `\cemph{`{=latex} values`}`{=latex}
+and a set of `\cemph{`{=latex} operations `}`{=latex} valid on those values
+
+. . .
+
+## Type system \centering
+
+. . .
+
+A type system assigns types to expressions and variables
+
+. . .
+
+## Type checking \centering
+
+Type checking verifies every operation against the types of its operands
 
 ::::
-:::: {.column width=50%}
+:::: {.column width=45%}
+
+. . .
 
 ::::: block
 
 ## Int64 \centering
+
+. . .
 
 ::: columns
 :::: {.column width=50%}
@@ -29,14 +49,20 @@ $[-2^{63}, 2^{63})$
 ::::
 :::: {.column width=50%}
 \centering
-`+` `-` `*` `/` `==` `<`
+`+` `-` `*` `/` `==` `<` `\phantom{$2^{63}$}`{=latex}
 ::::
 :::
 :::::
 
+. . .
+
+\vspace{1em}
+
 ::::: block
 
 ## Bool \centering
+
+. . .
 
 ::: columns
 :::: {.column width=50%}
@@ -50,9 +76,15 @@ $[-2^{63}, 2^{63})$
 :::
 :::::
 
+. . .
+
+\vspace{1em}
+
 ::::: block
 
 ## String \centering
+
+. . .
 
 ::: columns
 :::: {.column width=50%}
@@ -66,9 +98,15 @@ strings
 :::
 :::::
 
+. . .
+
+\vspace{1em}
+
 ::::: block
 
 ## List[Int] \centering
+
+. . .
 
 ::: columns
 :::: {.column width=50%}
