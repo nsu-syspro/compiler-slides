@@ -434,7 +434,7 @@ lists of integers
 
 ## Pipeline \centering
 
-- \cemphp{Type checker} sits between name resolution and code generation
+- \cempht{Type checker} sits between name resolution and code generation
 - Input: the AST with every name resolved to its declaration
 - Output: the same AST, each expression annotated with its type
 - Diagnostics for every mismatch, checking does not stop at the first
@@ -456,11 +456,12 @@ lists of integers
   ]
   \node[base] (p) {Parser};
   \node[base,below=2em of p] (nr) {Name resolution};
-  \node[base,draw=CtpPeach,very thick,below=2em of nr] (tc) {Type checking};
+  \node[base,draw=CtpTeal,very thick,below=2em of nr] (tc) {Type checking};
   \node[base,below=2em of tc] (ir) {IR generation};
   \draw (p)  -- (nr) node[midway,left] {AST};
   \draw (nr) -- (tc) node[midway,left] {resolved AST};
-  \draw (tc) -- (ir) node[midway,right] {typed AST, diagnostics};
+  \draw (tc) -- (ir) node[midway,left] {typed AST};
+  \draw (tc) -- (ir) node[midway,right] {diagnostics};
 \end{tikzpicture}
 ```
 
@@ -498,12 +499,12 @@ lists of integers
     t/.style={font=\ttfamily},
   ]
   \node[c] (op) {{+}};
-  \node[c,draw=CtpPeach,very thick,visible on=<3>] at (op) {};
+  \node[c,draw=CtpTeal,very thick,visible on=<3>] at (op) {};
   \node[c,draw=CtpRed,very thick,visible on=<4>] at (op) {};
   \node[c,below left=1em and 1em of op] (l) {{1}};
-  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (l) {};
+  \node[c,draw=CtpTeal,very thick,visible on=<2>] at (l) {};
   \node[c,below right=1em and 1em of op] (r) {{2.0}};
-  \node[c,draw=CtpPeach,very thick,visible on=<2>] at (r) {};
+  \node[c,draw=CtpTeal,very thick,visible on=<2>] at (r) {};
   \draw (op) -- (l);
   \draw (op) -- (r);
   \node[t,visible on=<3->,above=1em of op] {{+: (Int, Int) -> Int}};
