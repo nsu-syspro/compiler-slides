@@ -452,12 +452,12 @@ lists of integers
 \begin{tikzpicture}[
     ->,>=latex,
     every node/.style={font=\footnotesize,align=center},
-    base/.style={draw,minimum height=1.6em,minimum width=3.6cm,inner sep=0.5em},
+    base/.style={draw,minimum height=2em,minimum width=3.6cm,inner sep=0.6em},
   ]
   \node[base] (p)  at (0,0)    {Parser};
-  \node[base] (nr) at (0,-0.85) {Name resolution};
-  \node[base,draw=CtpPeach,very thick] (tc) at (0,-1.7) {Type checking};
-  \node[base] (ir) at (0,-2.55) {IR generation};
+  \node[base] (nr) at (0,-1.4) {Name resolution};
+  \node[base,draw=CtpPeach,very thick] (tc) at (0,-2.8) {Type checking};
+  \node[base] (ir) at (0,-4.2) {IR generation};
   \draw (p)  -- (nr) node[midway,right] {AST};
   \draw (nr) -- (tc) node[midway,right] {resolved AST};
   \draw (tc) -- (ir) node[midway,right] {typed AST, diagnostics};
