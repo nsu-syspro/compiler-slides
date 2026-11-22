@@ -136,7 +136,7 @@ lists of integers
 
 ## Static typing \centering
 
-- Checked at compile time, before the program ever runs
+- Operations are checked at compile time, before the program runs
 - A program is accepted or rejected without ever executing it
 - The compiler must know the type of every expression in advance
 - Every type is written by the programmer or inferred by the compiler
@@ -147,7 +147,7 @@ lists of integers
 
 ## Dynamic typing \centering
 
-- Checked at run time, on the values it actually receives
+- Operations are checked at run time, against the values they receive
 - The same program can work on some inputs and fail on others
 - Every value carries a tag recording its type at run time
 - Every operation checks the tag first, then proceeds or fails
