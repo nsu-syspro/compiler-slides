@@ -589,15 +589,16 @@ lists of integers
     t/.style={font=\ttfamily},
   ]
   \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
-    \& \node[c,t] (let) {{let}}; \& \\
+    \& \node[c,t] (var) {{var}}; \& \\
     \node[c,t,selected mauve on=<2>] (ann) {{x}}; \& \& \node[c,t,selected mauve on=<3>] (lit) {{1}}; \\
   };
   \graph [use existing nodes] {
-    (let) -- (ann),
-    (let) -- (lit),
+    (var) -- (ann),
+    (var) -- (lit),
     (ann) -> [dashed, CtpMauve, visible on=<2->] (lit)
   };
-  \node[t,visible on=<2->,below=1em of ann] {{Double}};
+  \node[t,above=1em of var] {{var x: Double = 1}};
+  \node[t,below=1em of ann] {{Double}};
   \node[t,visible on=<3>,below=1em of lit] {{Double}};
 \end{tikzpicture}
 ```
