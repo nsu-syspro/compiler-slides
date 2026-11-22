@@ -316,7 +316,8 @@ lists of integers
 
 - A type is its declared name: `class A`, `struct A`
 - Two types are the same only if they come from one declaration
-- Identical definitions remain different types (C++ ODR)
+- Identical definitions remain different types
+  (C++ one-definition rule)
 - The checker compares declarations, not definitions
 - Costs little: identity is name equality, renaming changes nothing
 
@@ -438,7 +439,7 @@ lists of integers
 - Input: the AST with every name resolved to its declaration
 - Output: the same AST, each expression annotated with its type
 - Diagnostics for every mismatch, checking does not stop at the first
-- Reuses the scope stack built by name resolution *(recap)*
+- Reuses the scope stack built by name resolution
 
 ::::
 :::: {.column width=50%}
@@ -569,8 +570,8 @@ lists of integers
 - Types propagate in both directions: results flow up, expectations
   flow down
 - \cempht{Synthesis} computes a type bottom-up, from the operands
-- \cempht{Checking} verifies an expression top-down against a type
-  from the context
+- \textcolor{CtpMauve}{Checking} verifies an expression top-down
+  against a type from the context
 - Type annotations and parameters pass expected types down
 - The same literal can get different types in different contexts
 
@@ -587,14 +588,17 @@ lists of integers
     c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0,outer sep=auto},
     t/.style={font=\ttfamily},
   ]
-  \matrix (m) [ampersand replacement=\&,row sep=1.5em,column sep=2em] {
+  \matrix (m) [ampersand replacement=\&,row sep=1em,column sep=1em] {
     \& \node[c,t] (let) {{let}}; \& \\
-    \node[c,t,selected on=<2>] (ann) {{x : Float}}; \& \& \node[c,t,selected on=<3>] (lit) {{1}}; \\
+    \node[c,t,selected mauve on=<2>] (ann) {{x}}; \& \& \node[c,t,selected mauve on=<3>] (lit) {{1}}; \\
   };
-  \graph [use existing nodes] { (let) -- (ann), (let) -- (lit) };
-  \draw[->,CtpTeal,thick,visible on=<2->] (ann) -- (lit)
-    node[pos=0.6,below=0.5em,t,CtpTeal] {{check: Float}};
-  \node[t,CtpTeal,visible on=<3>,below=1em of lit] {{1 : Float}};
+  \graph [use existing nodes] {
+    (let) -- (ann),
+    (let) -- (lit),
+    (ann) -> [dashed, CtpMauve, visible on=<2->] (lit)
+  };
+  \node[t,visible on=<2->,below=1em of ann] {{Double}};
+  \node[t,visible on=<3>,below=1em of lit] {{Double}};
 \end{tikzpicture}
 ```
 
