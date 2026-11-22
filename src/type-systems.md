@@ -161,6 +161,6 @@ lists of integers
 \vspace{0.4em}
 \begin{minipage}[t][2.4cm][c]{\linewidth}
 \centering
-\langaxis<2->[Static][Dynamic]{Rust/-0.95, Java/-0.8, C/-0.6, Go/-0.45, C++/-0.25, TypeScript/0.05, Python/0.6, Ruby/0.8, JavaScript/0.95}
+\langaxis<2->[Static][Dynamic]{Haskell/-1.0, Rust/_-0.95, Scala/-0.75, Java/-0.8, C/-0.6, Go/-0.45, C++/-0.35, TypeScript/0.05, Python/0.6, Lua/0.8, JavaScript/0.95, Bash/_1.0}
 \end{minipage}
 ```
