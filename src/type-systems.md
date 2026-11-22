@@ -458,8 +458,8 @@ lists of integers
   \node[base,below=2em of p] (nr) {Name resolution};
   \node[base,draw=CtpPeach,very thick,below=2em of nr] (tc) {Type checking};
   \node[base,below=2em of tc] (ir) {IR generation};
-  \draw (p)  -- (nr) node[midway,right] {AST};
-  \draw (nr) -- (tc) node[midway,right] {resolved AST};
+  \draw (p)  -- (nr) node[midway,left] {AST};
+  \draw (nr) -- (tc) node[midway,left] {resolved AST};
   \draw (tc) -- (ir) node[midway,right] {typed AST, diagnostics};
 \end{tikzpicture}
 ```
