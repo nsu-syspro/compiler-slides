@@ -610,6 +610,69 @@ lists of integers
 ::::
 :::
 
+# Type checker
+
+::: columns
+:::: {.column width=50%}
+
+## Nominal vs structural \centering
+
+- Nominal: the checker compares declarations, not definitions
+- Structural: the checker walks both definitions in lockstep
+- Fields compared pairwise, recursion into their types
+- Primitive types stop the walk, names anchor recursive types
+- Tree $\neq$ BST nominally
+- Tree $=$ BST structurally
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.7\textheight][c]{\linewidth}
+\centering
+```
+
+```{=latex}
+\begin{tikzpicture}[
+    c/.style={circle,draw,minimum size={3em-\pgflinewidth},inner sep=0,outer sep=auto},
+    s/.style={circle,draw,minimum size={2.5em-\pgflinewidth},inner sep=0,outer sep=auto,font=\small\ttfamily},
+    t/.style={font=\ttfamily},
+    node distance=0.5em,
+  ]
+  \matrix (a) [ampersand replacement=\&,row sep=1em,column sep=2.5em] {
+    \& \node[c,t] (tr) {{\{ \}}}; \& \\
+    \node[s] (tl) {l}; \& \node[s] (tx) {x}; \& \node[s] (trr) {r}; \\
+  };
+  \matrix (b) [ampersand replacement=\&,row sep=1em,column sep=2.5em,below=4em of a] {
+    \& \node[c,t] (br) {{\{ \}}}; \& \\
+    \node[s] (bl) {l}; \& \node[s] (by) {y}; \& \node[s] (brr) {r}; \\
+  };
+  \node[t,above=of tr] (tn) {Tree};
+  \node[t,above=of br] (bn) {BST};
+  \node[t,below=of tl] {Tree};
+  \node[t,below=of tx] {Int};
+  \node[t,below=of trr] {Tree};
+  \node[t,below=of bl] {BST};
+  \node[t,below=of by] {Int};
+  \node[t,below=of brr] {BST};
+  \graph [use existing nodes] {
+    (tr) -- (tl), (tr) -- (tx), (tr) -- (trr),
+    (br) -- (bl), (br) -- (by), (br) -- (brr)
+  };
+  \draw[dashed,->] (tl) to [bend left=60] (tr);
+  \draw[dashed,->] (trr) to [bend right=60] (tr);
+  \draw[dashed,->] (bl) to [bend left=60] (br);
+  \draw[dashed,->] (brr) to [bend right=60] (br);
+\end{tikzpicture}
+```
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # {.plain}
 
 \centering
