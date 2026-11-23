@@ -717,8 +717,7 @@ Foo* i = (Foo*) p;
 \vspace{1em}
 \small
 ```
-<https://lucacardelli.name/Papers/TypeSystems.pdf>  
-\ 
+<https://lucacardelli.name/Papers/TypeSystems.pdf>
 ```{=latex}
 \end{minipage}
 ```
@@ -733,7 +732,7 @@ Foo* i = (Foo*) p;
 \vspace{1em}
 \small
 ```
-`\phantom{y}`{=latex}<https://www.cis.upenn.edu/~bcpierce/tapl/>
+<https://www.cis.upenn.edu/~bcpierce/tapl/>
 ```{=latex}
 \end{minipage}
 ```
