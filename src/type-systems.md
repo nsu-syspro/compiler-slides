@@ -705,6 +705,42 @@ Foo* i = (Foo*) p;
 ::::
 :::
 
+# References
+
+::: columns
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+\qrcode[height=3.5cm]{https://lucacardelli.name/Papers/TypeSystems.pdf}
+\vspace{1em}
+\small
+```
+<https://lucacardelli.name/Papers/TypeSystems.pdf>  
+\ 
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.6\textheight][c]{\linewidth}
+\centering
+\qrcode[height=3.5cm]{https://www.cis.upenn.edu/~bcpierce/tapl/}
+\vspace{1em}
+\small
+```
+`\phantom{y}`{=latex}<https://www.cis.upenn.edu/~bcpierce/tapl/>
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # {.plain}
 
 \centering
