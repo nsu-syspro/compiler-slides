@@ -71,8 +71,10 @@ $(PDF_PUBLISH): $(PUBLISH_DIR)/%.pdf: $(SRC_DIR)/%.pdf
 ############################
 # Pandoc + LuaLaTeX patterns
 ############################
-# pandoc's own PDF pipeline always runs the LaTeX engine 4 times (beamer's
-# "TOC is present" makes its rerun loop never settle early), ~51s for a 47-page
+# pandoc's PDF pipeline runs the LaTeX engine up to 4 times: it reruns on
+# any "Warning: ... Rerun" log line, and it forces 3 runs whenever a .toc
+# file exists ("TOC is present", jgm/pandoc#10308) -- beamer writes .toc
+# for every deck with sections, even with no TOC slide. ~51s for a 47-page
 # deck. One lualatex pass produces a pixel-identical PDF in ~12s, so we go
 # through an intermediate .tex and run the engine once.
 
