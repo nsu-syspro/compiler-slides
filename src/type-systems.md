@@ -694,30 +694,25 @@ lists of integers
 \centering
 ```
 
-::: columns
-:::: {.column width=48%}
+::: {}
 
 ## sound \centering
 
-```{.c}
-Foo f = (Foo) o;
-// => checkcast Foo
-// tag checked at run time
+```{.cpp}
+Foo *f = dynamic_cast<Foo *>(p);
+// => tag checked at run time
 ```
-
-::::
-:::: {.column width=48%}
 
 ## unsound \centering
 
 ```{.c}
 int i = *(int *) &d;
 // => mov eax, [d]
-// nothing to check: UB
+// UB
 ```
 
-::::
 :::
+
 
 ```{=latex}
 \end{minipage}
