@@ -684,38 +684,22 @@ lists of integers
 - Sound: where the checker cannot prove, codegen inserts a runtime
   check
 - Unsound: nothing to check, the backend relies on undefined behavior
-- The cast is the same, what backs it is not
 
 ::::
-:::: {.column width=50%}
+:::: {.column width=45%}
 
-```{=latex}
-\begin{minipage}[c][.7\textheight][c]{\linewidth}
-\centering
-```
-
-::: {}
-
-## sound \centering
+## Sound \centering
 
 ```{.cpp}
-Foo *f = dynamic_cast<Foo *>(p);
-// => tag checked at run time
+Foo* f = dynamic_cast<Foo*>(p);
+// runtime check
 ```
 
-## unsound \centering
+## Unsound \centering
 
 ```{.c}
-int i = *(int *) &d;
-// => mov eax, [d]
+Foo* i = (Foo*) p;
 // UB
-```
-
-:::
-
-
-```{=latex}
-\end{minipage}
 ```
 
 ::::
