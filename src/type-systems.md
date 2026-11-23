@@ -621,8 +621,8 @@ lists of integers
 - Structural: the checker walks both definitions in lockstep
 - Fields compared pairwise, recursion into their types
 - Primitive types stop the walk, names anchor recursive types
-- Tree $\neq$ BST nominally
-- Tree $=$ BST structurally
+- \textcolor{CtpRed}{Tree $\neq$ BST} nominally
+- \textcolor{CtpGreen}{Tree $=$ BST} structurally
 
 ::::
 :::: {.column width=50%}
