@@ -673,6 +673,59 @@ lists of integers
 ::::
 :::
 
+# Type checker
+
+::: columns
+:::: {.column width=50%}
+
+## Soundness \centering
+
+- The type checker's verdict is a promise about run time
+- Sound: where the checker cannot prove, codegen inserts a runtime
+  check
+- Unsound: nothing to check, the backend relies on undefined behavior
+- The cast is the same, what backs it is not
+
+::::
+:::: {.column width=50%}
+
+```{=latex}
+\begin{minipage}[c][.7\textheight][c]{\linewidth}
+\centering
+```
+
+::: columns
+:::: {.column width=48%}
+
+## sound \centering
+
+```{.c}
+Foo f = (Foo) o;
+// => checkcast Foo
+// tag checked at run time
+```
+
+::::
+:::: {.column width=48%}
+
+## unsound \centering
+
+```{.c}
+int i = *(int *) &d;
+// => mov eax, [d]
+// nothing to check: UB
+```
+
+::::
+:::
+
+```{=latex}
+\end{minipage}
+```
+
+::::
+:::
+
 # {.plain}
 
 \centering
